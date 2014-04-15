@@ -17,7 +17,7 @@ if (isset($_GET["submit"])) {
                     <script src="js/vendor/modernizr.js"></script>    
     <meta charset="utf-8">
     
-    <title>Login : PAP</title>
+    <title>Adview: Appointment System | Administración</title>
     
 
 
@@ -70,73 +70,33 @@ if (isset($_GET["submit"])) {
     </script>
 </head>
 <body>
-<div class="sticky">
+<title>Pick A Partner</title>
+
+
+    <div class="sticky">
         <nav class="top-bar" data-topbar data-options="sticky_on: large">
             <section class="top-bar-section">
                 <ul class="title-area" >
                     <li class="name"><!-- Leave this empty --></li>
                     <li>
-                        <a>  <img src="./img/logo.jpg" height="30px" width="30px"/> </a>
+                        <a>
+                            <img heigth="29px" width="73" src="./img/logoadview.png">
+
+                        <b><font size="2.5" color="d4ee1c"> Appointment System </font></b> </a>
+                        
                     </li>
-                    <li>
-                        <a href="./index.html"> 
-                            Pick A Partner</a></li>
-                        </ul>
-                        <ul class="left">
-                            <li class="has-dropdown">
-                                <a href="#">Noticias</a>
-                                <ul class="dropdown">
-                                    <li>
-                                        <a href="#">Local</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Nacional</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Mundial</a>
-                                    </li>
-                                </ul>                       
-                            </li>
-                            <li class="has-dropdown">
-                                <a href="#">Causas</a>
-                                <ul class="dropdown">
-                                    <li>
-                                        <a href="#">Fundaciones</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Eventos</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Empresas Sociales</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Otros</a>
-                                    </li>
-                                </ul>                       
-                            </li>
-                            <li>
-                                <a href="./mapa.html">Mapa</a>
-                            </li>
-                        </ul>     
+                </ul>
+    
 
+            </section>
 
-                        <ul class="right">
-                            <li class="has-dropdown">
-                                <ul class="right">
-                            <li >
-                                <a href="#">Registrarse</a>
-                            </li>
-                        </li>
-                    </ul>    
-                        </section>
-
-                    </nav>
+        </nav>
                 </div>    <!--
     Comienza formulario de inicio de sesión.
     -->
 
 	<form action="login.php?submit" enctype="multipart/form-data" id="login_form" class="form-horizontal" method="POST">
-        <h2 class="text-center">PAP Login</h2>
+        <h2 class="text-center">Administración</h2>
 			<?php
 	switch ($err) {
 	case 1:
@@ -162,7 +122,7 @@ if (isset($_GET["submit"])) {
 	}
 	?>
         <div>
-            <input class="input-block-level first-input" type="text" id="email" name="email" placeholder="Email">
+            <input class="input-block-level first-input" type="text" id="email" name="email" placeholder="User">
         </div>
         <div>
             <input class="input-block-level last-input" type="password" id="password" name="password" placeholder="Password">

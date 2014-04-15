@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<link href='./calendar/fullcalendar.css' rel='stylesheet' />
+<link href='./calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+<script src='./calendar/lib/jquery.min.js'></script>
+<script src='./calendar/lib/jquery-ui.custom.min.js'></script>
+<script src='./calendar/fullcalendar.min.js'></script>
+<script>
+
+	$(document).ready(function() {
+	
+		var date = new Date();
+		var d = date.getDate();
+		var m = date.getMonth();
+		var y = date.getFullYear();
+		
+		var calendar = $('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek,agendaDay'
+			},
+			selectable: true,
+			selectHelper: true,
+			select: function(start, end, allDay) {
+				var title = prompt('Event Title:');
+				if (title) {
+					calendar.fullCalendar('renderEvent',
+						{
+							title: title,
+							start: start,
+							end: end,
+							allDay: allDay
+						},
+						true // make the event "stick"
+					);
+				}
+				calendar.fullCalendar('unselect');
+			},
+			editable: true,
+			events: [
+				
+			]
+		});
+		
+	});
+
+</script>
+<style>
+
+
+</style>
+</head>
+<body>
+		<div class="large-7 column">
+			<div id='calendar' style="width:90%" ></div>
+		</div>
+		<div class="large-5 column" >
+			<h1>Citas Confirmadas<h2>
+				holo
+		</div>
+</body>
+
+</html>
