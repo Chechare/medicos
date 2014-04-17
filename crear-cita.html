@@ -16,16 +16,17 @@
     <script src='./calendar/fullcalendar.min.js'></script>
     
     <script>
-    	var nombre;
+      var startDate, endDate;
+
+      function dateTime(day,month,year,hours,minutes){     //Función que crea un objeto DateTime (Fecha-Tiempo) para definir horario de la cita.
+          this.day=day;
+          this.month=month;
+          this.year=year;
+          this.hours=hours;
+          this.minutes=minutes;
+      }
 
       $(document).ready(function() {
-      
-        var date = new Date();
-        var d = date.getDate();
-        var m = date.getMonth();
-        var y = date.getFullYear();
-        
-
         var calendar = $('#calendar').fullCalendar({
           header: {
             left: 'prev,next today',
@@ -35,96 +36,64 @@
           selectable: true,
           selectHelper: true,
           select:function (start,end,allDay){
-	         	$('#firstModal').foundation('reveal', 'open'); 
-            document.getElementById("start").innerHTML=start;
-            document.getElementById("end").innerHTML=end;
-            //document.getElementById("allDay").innerHTML=allDay;
-	        },
+                  $('#firstModal').foundation('reveal', 'open'); //Abre ventana emergente
+                  startDate=new dateTime(start.getDate(),start.getMonth(),start.getFullYear(),start.getHours(),start.getMinutes());  // Comienzo de la cita.
+                  endDate=new dateTime(end.getDate(),end.getMonth(),end.getFullYear(),end.getHours(),end.getMinutes());              // Fin de la cita.
+                  document.getElementById("horaInicio").innerHTML=start.toLocaleTimeString();
+
+                  document.getElementById("end").innerHTML=end;
+                },
           editable: true,
-          events: [
-            
-          ]
         });
         
       });
 
-       function prueba(){
-
+      function createAppoiment(){
+        closeModal(); 
         var title=document.getElementById("cita").value;
-
         document.getElementById("demo").innerHTML=title;
-
-        var start=document.getElementById("start").value;
-        var end=document.getElementById("end").value;
-
-  
-	
-
-        $('#calendar').fullCalendar('renderEvent',
-              {
-                title: title,
-                start: start,
-                end: end,
+        $('#calendar').fullCalendar('renderEvent', 
+              {                
+                title:title,
+                start:new Date(startDate.year,startDate.month,startDate.day,startDate.hours,startDate.minutes),
+                end:new Date(endDate.year,endDate.month,endDate.day,endDate.hours,endDate.minutes),
                 allDay:false,
               },
             true // make the event "stick"
             );	
          $('#calendar').fullCalendar('unselect');
-
    		}  
 
+      function closeModal(){ 
+        $('#firstModal').foundation('reveal', 'close'); //Cierra ventana emergente
+      }
     </script>
 
-    <script>
-
-    
-    /*
-    	function crearCita(nombre){
-    	    $(document).ready(function(nombre) {
-
-    	    	$('#calendar').fullCalendar({
-	    	    	select:function(start, end, allDay,nombre) {
-				    	var title=nombre;
-				            if (title) {
-				              calendar.fullCalendar('renderEvent',
-				                {
-				                  title: title,
-				                  start: start,
-				                  end: end,
-				                  allDay: allDay
-				                },
-				                true // make the event "stick"
-				              );
-				            }
-				        calendar.fullCalendar('unselect');
-			    	}
-			    });
-		    });
-        } *\
-    </script>
   </head>
   <body>
 
 
-    <div class="large-12 column">
+    <!-- Calendario -->
+    <div class="large-12 column">                          
       <div id='calendar' style="width:60%" ></div>
     </div>
+
+    <!-- Ventana Emergente (Formulario)-->
     
-    <div id="firstModal" class="reveal-modal close" data-reveal="" style="visibility: invisible; display: block; opacity: 1;">
-        <h2>Nueva Cita</h2>
+    <div id="firstModal" class="reveal-modal close" data-reveal="" style="visibility: invisible; display: block; opacity: 1" align="left">
+        <h4>Nueva Cita</h4>
         <p ><b id="demo"></b><p>
-        <p>Inicio: <b id="start"></b></p>
+        <p>Inicio: <b id="horaInicio"></b></p>
         <p>Final: <b id="end"></b></p>
         <p>Duración: <b id="allday"></b></p>
 
        
         <form>
 			Cita: <input type="text" id="cita">
-			<input type="button" value="Crear" class="button" onclick="prueba()">
+			<input type="button" value="Crear Cita" class="button" onclick="createAppoiment()">
+      <input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
 
 		</form>
-
-      <a class="close-reveal-modal">&#215;</a>
     </div>
 
     
