@@ -1,0 +1,136 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <script src="js/vendor/jquery.js"></script>
+    <script src="js/foundation.min.js"></script>
+    <script src="js/vendor/modernizr.js"></script>    
+
+    <link rel="stylesheet" href="css/foundation.css" />
+
+    <link href='./calendar/fullcalendar.css' rel='stylesheet' />
+    <link href='./calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+
+    <script src='./calendar/lib/jquery-ui.custom.min.js'></script>
+    <script src='./calendar/fullcalendar.min.js'></script>
+    
+    <script>
+    	var nombre;
+
+      $(document).ready(function() {
+      
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+        
+
+        var calendar = $('#calendar').fullCalendar({
+          header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+          },
+          selectable: true,
+          selectHelper: true,
+          select:function (start,end,allDay){
+	         	$('#firstModal').foundation('reveal', 'open'); 
+            document.getElementById("start").innerHTML=start;
+            document.getElementById("end").innerHTML=end;
+            //document.getElementById("allDay").innerHTML=allDay;
+	        },
+          editable: true,
+          events: [
+            
+          ]
+        });
+        
+      });
+
+       function prueba(){
+
+        var title=document.getElementById("cita").value;
+
+        document.getElementById("demo").innerHTML=title;
+
+        var start=document.getElementById("start").value;
+        var end=document.getElementById("end").value;
+
+  
+	
+
+        $('#calendar').fullCalendar('renderEvent',
+              {
+                title: title,
+                start: start,
+                end: end,
+                allDay:false,
+              },
+            true // make the event "stick"
+            );	
+         $('#calendar').fullCalendar('unselect');
+
+   		}  
+
+    </script>
+
+    <script>
+
+    
+    /*
+    	function crearCita(nombre){
+    	    $(document).ready(function(nombre) {
+
+    	    	$('#calendar').fullCalendar({
+	    	    	select:function(start, end, allDay,nombre) {
+				    	var title=nombre;
+				            if (title) {
+				              calendar.fullCalendar('renderEvent',
+				                {
+				                  title: title,
+				                  start: start,
+				                  end: end,
+				                  allDay: allDay
+				                },
+				                true // make the event "stick"
+				              );
+				            }
+				        calendar.fullCalendar('unselect');
+			    	}
+			    });
+		    });
+        } *\
+    </script>
+  </head>
+  <body>
+
+
+    <div class="large-12 column">
+      <div id='calendar' style="width:60%" ></div>
+    </div>
+    
+    <div id="firstModal" class="reveal-modal close" data-reveal="" style="visibility: invisible; display: block; opacity: 1;">
+        <h2>Nueva Cita</h2>
+        <p ><b id="demo"></b><p>
+        <p>Inicio: <b id="start"></b></p>
+        <p>Final: <b id="end"></b></p>
+        <p>Duración: <b id="allday"></b></p>
+
+       
+        <form>
+			Cita: <input type="text" id="cita">
+			<input type="button" value="Crear" class="button" onclick="prueba()">
+
+		</form>
+
+      <a class="close-reveal-modal">&#215;</a>
+    </div>
+
+    
+    
+    <script>
+      $(document).foundation();
+    </script>
+  </body>
+</html>
