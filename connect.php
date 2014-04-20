@@ -21,7 +21,7 @@ if (!$conn) {
 
 // Prepare the statement
 //El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-$stid = oci_parse($conn, 'SELECT * FROM doctor');
+$stid = oci_parse($conn, 'SELECT * FROM doctor_data');
 if (!$stid) {
     $e = oci_error($conn);
     trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
