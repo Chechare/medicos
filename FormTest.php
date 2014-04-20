@@ -12,14 +12,15 @@ ID: <input type="text" name="id" value="<?php if (isset($_POST["id"]))echo $_POS
 
 Especialidad: <input type="text" name="spec" value="<?php if (isset($_POST["spec"]))echo $_POST["spec"]; else echo "";?>">
 
-Duración de Cita<input list="lenght">
+Duración de Cita<input type="text" list="applenght" name="lenght" value="<?php if (isset($_POST["lenght"]))echo $_POST["lenght"]; else echo "";?>">
 
-<datalist id="lenght">
-  <option value="30 min">
-  <option value="1 hr">
-  <option value="1:30 min">
+
+<datalist id="applenght">
+  <option value="00:15">
+  <option value="00:30">
+  <option value="00:45">
+  <option value="01:00">
 </datalist>
-
 <!--Comment: <textarea name="comment" rows="5" cols="40"><?php echo $comment;?></textarea>
 --->
 <input type="submit" value="Submit">
@@ -44,7 +45,7 @@ if (!$conn) {
     trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 }
 //Preparando statement, los valores que empiezan con ':' seran remplazados con variables
-$stid = oci_parse($conn, 'INSERT INTO DOCTOR (drid, dfname,dlname,specialty) VALUES(:myid, :myfname, :mylname, :myspec)');
+$stid = oci_parse($conn, "INSERT INTO DOCTOR (drid, dfname,dlname,specialty,app_lenght) VALUES(:myid, :myfname, :mylname, :myspec, to_date(:mylenght,'HH24:MI'))");
 
 //Asignando variables
 if($_POST!=NULL){
@@ -52,7 +53,7 @@ if($_POST!=NULL){
 	oci_bind_by_name($stid, ':myfname', $_POST["fname"]);
 	oci_bind_by_name($stid, ':mylname', $_POST["lname"]);
 	oci_bind_by_name($stid, ':myspec', $_POST["spec"]);
-	//oci_bind_by_name($stid, ':mylenght', $_POST["lenght"]);
+	oci_bind_by_name($stid, ':mylenght', $_POST["lenght"]);
 
 	$r = oci_execute($stid);  // executes and commits
 
