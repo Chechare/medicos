@@ -34,7 +34,7 @@
 
 			// Prepare the statement
 			//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-			$stid = oci_parse($conn, 'SELECT * FROM doctor_data');
+			$stid = oci_parse($conn, 'SELECT * FROM doctor_data ORDER BY drid');
 			if (!$stid) {
 			    $e = oci_error($conn);
 			    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
@@ -97,7 +97,14 @@
     	</div>
     	<div class="large-2 column">
         <label>Duración de la cita</label>
-        <input type="text" name="app_length"> </input> </p>
+        <input type="text" list="applenght" name="app_length"> 
+		<datalist id="applenght">
+		  <option value="00:15">
+		  <option value="00:30">
+		  <option value="00:45">
+		  <option value="01:00">
+		</datalist>
+		</input> </p>
     	</div>
    		</div>
 
