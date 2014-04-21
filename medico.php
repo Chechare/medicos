@@ -110,7 +110,7 @@
 
        </fieldset>
        
-		<input type="submit" name="agregar" class="button" >
+		<input type="submit" name="agregar" value="Agregar" class="button" >
 		<input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
 		
 		</form>

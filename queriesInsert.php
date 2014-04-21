@@ -9,11 +9,13 @@
 	     )";
 
 	$conn = oci_connect("a01226103", "14db103", $MYDB);
+
 		if (!$conn) {
 		    $e = oci_error();
 		    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 		}
-
+		
+	
 
 	if(isset($_POST['agregar'])){
 
@@ -40,5 +42,6 @@
 
 			
 	}
+	
 	oci_close($conn);
 ?>
