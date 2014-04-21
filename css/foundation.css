@@ -20,6 +20,31 @@ overflow-x: hidden; /*for hiding horizontal scroll bar*/
 overflow-y: auto; /*for vertical scroll bar*/
 } 
 
+table td{
+  text-align: center;
+  vertical-align:middle; 
+}
+
+td{
+  text-align: center;
+  vertical-align:middle; 
+  color:#222222;
+}
+
+th{
+  background-color: #333333;
+  color:#fff;
+
+}
+
+table{
+  width:90%;
+  text-align: center;
+
+}
+
+
+
 /*Foundation CSS */
 
 
@@ -878,7 +903,7 @@ select {
   .column,
   .columns {
     position: relative;
-    padding-left: 0;
+    padding-left: .2em;
     padding-right: 0;
     float: left; }
 
@@ -4132,12 +4157,12 @@ table {
       font-size: 0.875rem;
       font-weight: bold;
       color: #222222;
-      text-align: left; }
+      text-align: center; }
   table tr th,
   table tr td {
     padding: 0.5625rem 0.625rem;
     font-size: 0.875rem;
-    color: #222222; }
+    }
   table tr.even, table tr.alt, table tr:nth-of-type(even) {
     background: #f9f9f9; }
   table thead tr th,
