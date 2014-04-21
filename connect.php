@@ -38,6 +38,8 @@ if (!$r) {
 // Fetch the results of the query
 //Toma los datos, revisa y mientras alla una fila crea una para la tabla. El foreach recorre las columnas que regresa el resultado
 print "<table border='1'>\n";
+echo "<tr>\n <td>ID</td>\n <td>Nombre(s)</td>\n <td>Apellido(s)</td>\n <td>Especialidad</td>\n <td>Duracion de Cita</td>\n </tr>\n";
+
 while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
     print "<tr>\n";
     foreach ($row as $item) {
