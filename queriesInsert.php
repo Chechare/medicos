@@ -40,7 +40,7 @@
 				echo "Error Add [".$e['message']."]";
 			}
 
-			
+			//oci_free_statement($strSql);
 	}
 	
 	oci_close($conn);

@@ -8,6 +8,9 @@
 <script src='./calendar/lib/jquery.min.js'></script>
 <script src='./calendar/lib/jquery-ui.custom.min.js'></script>
 <script src='./calendar/fullcalendar.min.js'></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
+<script src="./js/jquery.qtip-1.0.0-rc3.min.js"></script> 
+
 <script>
 
 	$(document).ready(function() {
@@ -38,7 +41,28 @@
 
 				// any other sources...
 
-			]
+			],
+			 eventRender: function(event, element) {
+				element.qtip({
+					content: '<strong>Doctor:</strong> <br/>'+event.dfname+' '+event.dlname+' <br/><strong>Paciente:</strong> <br/>' +event.pfname+' '+event.plname+' <br/><strong>Descripción:</strong> <br/>'+event.description,
+					 position: {
+						  corner: {
+							 tooltip:'leftMiddle', // Use the corner...
+							 target: 'rightMiddle' // ...and opposite corner
+						  }
+					   },
+					   style: {
+						  border: {
+							 width: 3,
+							 radius: 5
+						  },
+						  padding: 10, 
+						  textAlign: 'left',
+						  tip: true, // Give it a speech bubble tip with automatic corner detection
+						  name: 'dark' // Style it according to the preset 'cream' style
+					   }
+				});
+			}
 		});
 
 	$('#calendar1').fullCalendar({
@@ -57,7 +81,8 @@
 					color: 'blue',    // an option!
 					textColor: 'white',  // an option!
 					allDayDefault: false,
-					startEditable: false
+					startEditable: false,
+					editable: false
 				}
 
 				// any other sources...
