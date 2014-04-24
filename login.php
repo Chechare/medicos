@@ -1,27 +1,20 @@
 <?php 
-require_once("driver.php");
-require_once("layout.php");
+include "driver.php";
 
-$driver = new dbDriver();
 $err = isset($_GET["err"]) ? $_GET["err"] : 0;
-$email = '';
+$user = '';
 $password = '';
-if (isset($_GET["submit"])) {
-	$driver->login($_POST["email"], $_POST["password"]);
-}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="css/foundation.css" />
-                    <script src="js/vendor/modernizr.js"></script>    
+    <script src="js/vendor/modernizr.js"></script>    
     <meta charset="utf-8">
     
     <title>Adview: Appointment System | Administración</title>
     
-
-
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/bootstrap.css" rel="stylesheet" media="screen">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
@@ -37,21 +30,19 @@ if (isset($_GET["submit"])) {
                     $(element).addClass("input-error");
                 },
                 rules :{
-                    email : {
+                    user : {
                         required : true, //para validar campo vacio
-                        email    : true  //para validar formato email
                     },
                     password :{
                         required : true	
                     }
                 },
                 messages :{
-                    email : {
-                        required : "", //para validar campo vacio
-                        email    : ""  //para validar formato email
+                    user : {
+                        required : "Requerido" //para validar campo vacio
                     },
                     password : {
-                        required : ""	
+                        required : "Requerido"	
                     }
                 },
                 errorElement: "div",
@@ -70,32 +61,11 @@ if (isset($_GET["submit"])) {
     </script>
 </head>
 <body>
-<title>Pick A Partner</title>
-
-
-    <div class="sticky">
-        <nav class="top-bar" data-topbar data-options="sticky_on: large">
-            <section class="top-bar-section">
-                <ul class="title-area" >
-                    <li class="name"><!-- Leave this empty --></li>
-                    <li>
-                        <a>
-                            <img heigth="29px" width="73" src="./img/logoadview.png">
-
-                        <b><font size="2.5" color="d4ee1c"> Appointment System </font></b> </a>
-                        
-                    </li>
-                </ul>
-    
-
-            </section>
-
-        </nav>
-                </div>    <!--
+    <!--
     Comienza formulario de inicio de sesión.
     -->
 
-	<form action="login.php?submit" enctype="multipart/form-data" id="login_form" class="form-horizontal" method="POST">
+	<form action="process_login.php" enctype="multipart/form-data" id="login_form" class="form-horizontal" method="POST">
         <h2 class="text-center">Administración</h2>
 			<?php
 	switch ($err) {
@@ -104,7 +74,7 @@ if (isset($_GET["submit"])) {
 		<div>
 			<div class="alert alert-error alerta">
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<strong>Ups!</strong> Wrong email and password combination.
+				<strong>Ups!</strong> Usuario y/o Contraseña incorrectos. Intente de nuevo.
 			</div>
 		</div>
 		<?php
@@ -122,17 +92,15 @@ if (isset($_GET["submit"])) {
 	}
 	?>
         <div>
-            <input class="input-block-level first-input" type="text" id="email" name="email" placeholder="User">
+            <input class="input-block-level first-input" type="text" id="user" name="user" placeholder="Usuario">
         </div>
         <div>
-            <input class="input-block-level last-input" type="password" id="password" name="password" placeholder="Password">
+            <input class="input-block-level last-input" type="password" id="password" name="password" placeholder="Contraseña">
         </div>
         <div class="control-group">
             <div class"checkbox">
-                <label class="checkbox">
-                    <input type="checkbox"> Remember me
-                </label>
-                <button type="submit" class="btn btn-primary btn-block button-padding">Login</button>
+              
+                <button type="submit" class="btn btn-primary btn-block button-padding">Iniciar Sesión</button>
             </div>
         </div>
     </form>

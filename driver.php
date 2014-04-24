@@ -1,139 +1,91 @@
 <?php
-class dbDriver{
-	private $conexion;
-	
-	function __construct(){
-	    $this->conexion = mysqli_connect("localhost","root","","pap");
-	    if (mysqli_connect_errno())
-	  	{
-	  		echo "Error while connecting the database" . mysqli_connect_error();
-	  	}
-		session_start();
-	}
-	
-	function __destruct(){
-		mysqli_close($this->conexion);
+
+function sec_session_start() {
+        $session_name = 'sec_session_id'; //Configura un nombre de sesión personalizado
+                        $secure = false; //Configura en verdadero (true) si utilizas https
+                        $httponly = true; //Esto detiene que javascript sea capaz de accesar la identificación de la sesión.
+                        ini_set('session.use_only_cookies', 1); //Forza a las sesiones a sólo utilizar cookies.
+                        $cookieParams = session_get_cookie_params(); //Obtén params de cookies actuales.
+                        session_set_cookie_params($cookieParams["lifetime"], $cookieParams["path"], $cookieParams["domain"], $secure, $httponly);        
+                        session_name($session_name); //Configura el nombre de sesión a el configurado arriba.
+                        session_start(); //Inicia la sesión php
+                        session_regenerate_id(true); //Regenera la sesión, borra la previa.                 
+}
+
+function login($user, $password, $conn) {
+   	//Uso de sentencias preparadas significa que la inyección de SQL no es posible.
+	$query = oci_parse($conn, "SELECT password, id FROM admin WHERE username=:name");
+	oci_bind_by_name($query,":name",$user);
+
+	$r = oci_execute($query);
+	if (!$r) {
+	    $e = oci_error($query);
+	    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 	}
 
-	function addTag($id, $titulo, $descripcion, $latitud, $longitud, $tipo, $video, $meta, $fecha){
-		$query = mysqli_query($this->conexion, "INSERT INTO points (id, titulo, descripcion, latitud, longitud, tipo, video, meta, fecha) VALUES ('$id', '$titulo', '$descripcion', '$latitud', '$longitud', '$tipo', '$video', '$meta', '$fecha')");
-	}
-	
-	function login($user, $password){
-		$password = md5($password);
-		$query = mysqli_query($this->conexion,"SELECT * from users where email='$user'");			
-		$row = $query->fetch_array(MYSQLI_ASSOC);
-		if($row['password'] == $password){
-			$_SESSION["name"] = $row["name"];
-			$_SESSION["id"] = $row["id"];
-			header('Location: index.php');
+	$row = oci_fetch_array($query);	
+	$user_id=$row[1];
+	$dbPass=$row[0];
+
+
+	oci_close($conn);
+            
+    if($dbPass == $password) { //Revisa si la contraseña en la base de datos coincide con la contraseña que el usuario envió.
+		//¡La contraseña es correcta!
+        $user_browser = $_SERVER['HTTP_USER_AGENT']; //Obtén el agente de usuario del usuario
+        $user_id = preg_replace("/[^0-9]+/", "", $user_id); //protección XSS ya que podemos imprimir este valor
+        $_SESSION['user_id'] = $user_id;
+        $username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $user); //protección XSS ya que podemos imprimir este valor
+        $_SESSION['username'] = $username;
+        $_SESSION['login_string'] = hash('sha512',$dbPass.$user_browser);
+		echo $_SESSION['username'];
+		return true;  //Inicio de sesión exitosa
+    }else {
+		return false; //La conexión no es correcta    
+    }
+}
+
+function login_check($conn) {
+	   //Revisa si todas las variables de sesión están configuradas.
+
+	if(isset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['login_string'])) {
+
+		$user_id = $_SESSION['user_id'];
+		$login_string = $_SESSION['login_string'];
+		$username = $_SESSION['username'];
+		$user_browser = $_SERVER['HTTP_USER_AGENT']; //Obtén la cadena de caractéres del agente de usuario
+
+		$query = oci_parse($conn, "SELECT password, id FROM admin WHERE username=:name");
+		oci_bind_by_name($query,":name",$username);
+
+		$r = oci_execute($query);
+		if (!$r) {
+		    $e = oci_error($query);
+		    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+		}
+
+		$row = oci_fetch_array($query);	
+		$user_id=$row[1];
+		$pass=$row[0];
+
+		oci_close($conn);
+
+		$login_check = hash('sha512',$pass.$user_browser);
+
+		/*echo "<p></p>";
+		echo "Generada por la sesion: ".$login_string;
+		echo "<p></p>";
+		echo "Generada para checar: ".$login_check;*/
+
+
+		if($login_check == $login_string) {			
+			return true; //¡¡¡¡Conectado!!!!
 		} else {
-			header('Location: login.php?err=1');
+			return false; //No conectado
 		}
-	}
-	
-	function verify($username){
-		if($username != $_SESSION["id"]){
-			header('Location: login.php?err=2');
-		}
-	}
-	
-	function getTag($id){
-		$query = mysqli_query($this->conexion, "SELECT * FROM points WHERE id='$id'");
-		$row=$query->fetch_array(MYSQLI_ASSOC);
-		$array = array(
-			"titulo" => $row['titulo'],
-			"descripcion" => $row['descripcion'],
-			"latitud" => $row['latitud'],
-			"longitud" => $row['longitud'],
-			"tipo" => $row['tipo'],
-			"id" => $row['id'],
-			"meta" => $row['meta'],
-			"fecha" => $row['fecha'],
-		);
-		return $array;
-	}
-
-	function getUser($id){
-		$query = mysqli_query($this->conexion, "SELECT * FROM users WHERE id='$id'");
-		$row=$query->fetch_array(MYSQLI_ASSOC);
-		$array = array(
-			"name" => $row['name'],
-			"email" => $row['email'],
-			"points" => $row['points'],
-			"country" => $row['country'],
-			"city" => $row['city'],
-			"logo_path" => $row['logo_path'],
-		);
-		return $array;
-	}
-
-	function getTags($username){
-		$query = mysqli_query($this->conexion, "SELECT * FROM points WHERE id='$username' order by id");
-		echo '<table class="table zebra-striped">';
-		echo "<thead><tr><th>#</th><th>Tag name</th><th>tipo</th><th>latitud</th><th>longitud</th><th>Edit</th><th>Delete</th></tr></thead>";
-		$i = 1;
-		echo "<tbody>";
-		while($row=$query->fetch_array(MYSQLI_ASSOC)){
-			echo "<tr><th>".$i."</th><th>".$row['titulo']."</th><th>".$row['tipo']."</th><th>".$row['latitud']."</th><th>".$row['longitud']."</th><th><a href='tags.php?edit=".$row['id']."' class='btn btn-info btn-small'>Edit</a></th><th><a href='tags.php?delete=".$row['id']."' class='btn btn-danger btn-small'>Delete</a></th></tr>";
-			$i++;
-		}
-		echo "</tbody>";
-		echo "</table>";
-	}
-	
-	function editTag($titulo, $descripcion, $latitud, $longitud, $video, $tipo, $meta, $fecha, $id){
-		return $query = mysqli_query($this->conexion,"UPfecha points SET titulo='$titulo', descripcion='$descripcion', latitud='$latitud', longitud='$longitud', video='$video', tipo='$tipo', meta='$meta', fecha='$fecha' WHERE id='$id'"); 	 
-	}
-
-	function editUser($id, $name, $email, $country, $city, $logo_path){
-		if($logo_path=="logo/"){
-			return $query = mysqli_query($this->conexion,"UPfecha users SET name='$name', email='$email', country='$country', city='$city' WHERE id='$id'");
-		} else {
-			return $query = mysqli_query($this->conexion,"UPfecha users SET name='$name', email='$email', country='$country', city='$city', logo_path='$logo_path' WHERE id='$id'"); 	 
-		}
-	}
-	
-	function deleteTag($id){
-		return $query = mysqli_query($this->conexion,"DELETE FROM points WHERE id='$id'");
-	}
-	
-	function getTagsByUser($id){
-		$sql_tag  = mysqli_query($this->conexion,"SELECT * FROM points where id='$id'");
-		$sql_user = mysqli_query($this->conexion,"SELECT * FROM users where id='$id'");
-		$row_user = mysqli_fetch_array($sql_user);
-		$response = array();
-		$posts = array();
-		while($row_tag = mysqli_fetch_array($sql_tag)) {
-			$titulo = $row_tag['titulo'];
-			$descripcion = $row_tag['descripcion'];
-			$latitud = $row_tag['latitud'];
-			$longitud = $row_tag['longitud'];
-			$tipo = $row_tag['tipo'];
-			$video = $row_tag['video'];
-			$meta = $row_tag['meta'];
-			$fecha = $row_tag['fecha'];
-			$logo = $row_user['logo_path'];
-
-			$posts[] = array('titulo'=>$titulo, 'descripcion'=>$descripcion, 'latitud'=>$latitud, 'longitud'=>$longitud, 'tipo'=>$tipo, 'video'=>$video, 'logo_path'=>$logo, 'meta'=>$meta , 'fecha'=>$fecha);
-		}
-		$response['posts'] = $posts;
-		echo json_encode($response);
-		/*
-		$fp = fopen("$id.json", 'w');
-		fwrite($fp, json_encode($response));
-		fclose($fp);
-		*/
-	}
-
-	function checkPoints($id){
-		$query = mysqli_query($this->conexion, "SELECT points FROM users where id='$id'");
-		$row=$query->fetch_array(MYSQLI_ASSOC);
-		if($row['points'] > 0){
-			return true;
-		} else {
-			return false;
-		}
+	} else {
+		return false; //No conectado
 	}
 }
+
 ?>
