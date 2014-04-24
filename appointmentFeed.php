@@ -19,12 +19,15 @@ if (!$conn) {
 
 // Prepare the statement
 //El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-$stid = oci_parse($conn, 'SELECT * FROM app_data');
+$stid = oci_parse($conn, 'SELECT * FROM app_data WHERE drid=:myid AND status=:mystatus');
 if (!$stid) {
     $e = oci_error($conn);
     trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 }
-
+if($_POST!=NULL){
+	oci_bind_by_name($stid, ':myid', $_POST["dr"]);
+	oci_bind_by_name($stid, ':mystatus', $_POST["status"]);
+}
 // Perform the logic of the query
 // Ejecuta el querie
 $r = oci_execute($stid);

@@ -98,12 +98,11 @@
     	<div class="large-2 column">
         <label>Duración de la cita</label>
 		<select name="app_length">
-        
 		  <option value="00:15">15 min</option>
 		  <option value="00:30">30 min</option>
 		  <option value="00:45">45 min</option>
 		  <option value="01:00">1 hora</option>
-		 </select>
+		</select>
 		
 		</input> </p>
     	</div>

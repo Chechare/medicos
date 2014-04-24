@@ -36,6 +36,7 @@
 					type: 'POST',
 					data: {
 						dr: <?php if(isset($_GET['dr'])){ echo "'".$_GET['dr']."'";} else echo "'D01'"; ?>,
+						status: 'A'
 					},
 					error: function() {
 						alert('there was an error while fetching events!');
