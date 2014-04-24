@@ -97,13 +97,14 @@
     	</div>
     	<div class="large-2 column">
         <label>Duración de la cita</label>
-        <input type="text" list="applenght" name="app_length"> 
-		<datalist id="applenght">
-		  <option value="00:15">
-		  <option value="00:30">
-		  <option value="00:45">
-		  <option value="01:00">
-		</datalist>
+		<select name="app_length">
+        
+		  <option value="00:15">15 min</option>
+		  <option value="00:30">30 min</option>
+		  <option value="00:45">45 min</option>
+		  <option value="01:00">1 hora</option>
+		 </select>
+		
 		</input> </p>
     	</div>
    		</div>
