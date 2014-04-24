@@ -33,6 +33,13 @@
 				// your event source
 				{
 					url: 'appointmentFeed.php', // use the `url` property
+					type: 'POST',
+					data: {
+						dr: 'something',
+					},
+					error: function() {
+						alert('there was an error while fetching events!');
+					},
 					color: 'teal',    // an option!
 					textColor: 'white',  // an option!
 					allDayDefault: false,
@@ -104,6 +111,63 @@
 </style>
 </head>
 <body>
+		<div class="row">
+		<h3>Doctor:
+			<select>
+			<?php
+				// Create connection to Oracle
+				//la coneccion obviamente
+
+				$MYDB ="
+					 (DESCRIPTION =
+					   (ADDRESS = (PROTOCOL = TCP)(HOST = info.gda.itesm.mx)(PORT = 1521))
+					   (CONNECT_DATA =
+						 (SID = ALUM)
+						 (SERVER = DEDICATED)
+					   )
+					 )";
+					
+				$conn = oci_connect("a01226103", "14db103", $MYDB);
+				if (!$conn) {
+					$e = oci_error();
+					trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+				}
+
+				// Prepare the statement
+				//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
+				$stid = oci_parse($conn, 'SELECT * FROM doctor_data ORDER BY drid');
+				if (!$stid) {
+					$e = oci_error($conn);
+					trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+				}
+
+				// Perform the logic of the query
+				// Ejecuta el querie
+				$r = oci_execute($stid);
+				if (!$r) {
+					$e = oci_error($stid);
+					trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+				}
+
+				// Fetch the results of the query
+				//Toma los datos, revisa y mientras alla una fila crea una para la tabla. El foreach recorre las columnas que regresa el resultado
+
+				while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
+					echo "<option value='".$row['DRID']."'>".$row['DFNAME'].' '.$row['DLNAME'].'-'.$row['SPECIALTY'].'</option> /n'
+				}
+				//cerrar conexion
+				oci_free_statement($stid);
+				oci_close($conn);
+
+			?>
+
+			  <option value="volvo">Volvo</option>
+			  <option value="saab">Saab</option>
+			  <option value="opel">Opel</option>
+			  <option value="audi">Audi</option>
+			</select>
+			</h3>
+		</div>
 		<div class="large-7 column">
 			<div id='calendar' style="width:90%" ></div>
 		</div>
@@ -111,6 +175,7 @@
 			<h1>Citas Confirmadas<h2>
 			<div id='calendar1' style="width:100%" ></div>
 		</div>
+		
 </body>
 
 </html>
