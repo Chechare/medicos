@@ -42,7 +42,13 @@ if(login_check($conn) == true) {
                         </li>
                     </ul>
                 </section>
-
+                <section>
+                    <ul class="right">
+                        <li class="name">
+                            <button onclick="window.location.href='logout.php'" type="button"> Cerrar Sesión </<button></button>>
+                        </li>
+                    </ul>
+                </section>
             </nav>
         </div>
 

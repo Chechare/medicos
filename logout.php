@@ -9,5 +9,6 @@
 	setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
 	//Destruye sesión
 	session_destroy();
-	header('Location: ./');
+	//Redigir a login.php con la dirección admin.php predeterminada
+    header('Location: ./login.php');
 ?>
