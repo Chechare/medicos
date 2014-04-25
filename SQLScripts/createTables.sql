@@ -51,3 +51,5 @@ REFERENCES Patient(PId),
 CONSTRAINT fk_appointmentDr FOREIGN KEY (DrId)
 REFERENCES Doctor(DrId)
 );
+
+CREATE VIEW patient_data AS SELECT pfname,plname nombre,phone,email FROM Patient;

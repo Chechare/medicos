@@ -51,18 +51,18 @@ if(login_check($conn) == true) {
             
          <ul class="off-canvas-list" style="height:100%" >
                     <li><label>Administración de Citas</label></li>
-                    <li><a href="#" onclick="changeIframeSrc('calendario_Confirmados.html')">Citas Confirmadas</a></li>
-                    <li><a href="#" onclick="changeIframeSrc('calendario-solicitudes.html')">Citas Pendientes</a></li>
-                    <li><a href="#" onclick="changeIframeSrc('crear-cita.html')">Crear Cita</a></li>        
+                    <li><a href="#" onclick="changeIframeSrc('calendario_Confirmados.php')">Citas Confirmadas</a></li>
+                    <li><a href="#" onclick="changeIframeSrc('calendario-solicitudes.php')">Citas Pendientes</a></li>
+                    <li><a href="#" onclick="changeIframeSrc('crear-cita.php')">Crear Cita</a></li>        
                     <li><label>Administración del Sitio</label></li>        
-                    <li><a href="#" onclick="changeIframeSrc('./mapa.php?filtro=tipo%20=%20\'ambiental\'')">Pacientes</a></li>
+                    <li><a href="#" onclick="changeIframeSrc('./paciente.php')">Pacientes</a></li>
                     <li><a href="#" onclick="changeIframeSrc('medico.php')">Médicos</a></li>
                     <li><a href="#" onclick="changeIframeSrc('./mapa.php?filtro=tipo%20=%20\'deportivo\'')">Horarios</a></li>
         </ul>
 
         </div>    
         <div class="large-10 column" style="height:100%">
-                <iframe id="frameCambiante" src="./calendario_Confirmados.html" name="iframe_a" style="height:100%;width:100%"></iframe>
+                <iframe id="frameCambiante" src="./calendario_Confirmados.php" name="iframe_a" style="height:100%;width:100%"></iframe>
         <div/>
 
         
@@ -77,8 +77,10 @@ if(login_check($conn) == true) {
     </html>
     <?php
 } else {
-   echo '<meta charset="utf-8" /> No estás autorizado para acceder a esta página, por favor <a href="login.php"> inicia sesión.</a> <br/>';
-}
+    $url="http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+    $_SESSION['url'] =$url;
+    header('Location: ./login.php?err=2');
+    }
 ?>
 
 

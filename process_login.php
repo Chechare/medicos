@@ -8,13 +8,15 @@ if(isset($_POST['user'], $_POST['password'])) {
    $password = $_POST['password']; //La contraseña con hash
    if(login($user, $password, $conn) == true) {
         //Inicio de sesión exitosa
-      header( 'Location: admin.php' ) ;
-   } else {
+      $url = $_SESSION['url'];
+      header('Location:'.$url);   
+    } else {
+      header('Location: login.php?err=1');  
         //Inicio de sesión fallida
-      header('Location: ./login.php?err=1');
+      
    }
 } else {
    //Las variaciones publicadas correctas no se enviaron a esta página
-echo 'Solicitud no válida';
+      echo 'Solicitud no válida';
 }
 ?>

@@ -20,7 +20,7 @@ if(login_check($conn)){
 
 	<body style="background-color:white">
 		<div class="large-12 column" style="height:20%;" align="center">
-			<h1 >Médicos Registrados</h1>
+			<h1 >Pacientes</h1>
 		</div>
 		<div class="large-12 column vscrollbar" align="center" style="height:60%;"  >
 			<?php
@@ -28,7 +28,7 @@ if(login_check($conn)){
 
 				// Prepare the statement
 				//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-				$stid = oci_parse($conn, 'SELECT * FROM doctor_data ORDER BY drid');
+				$stid = oci_parse($conn, 'SELECT * FROM patient_data ORDER BY pfname');
 				if (!$stid) {
 				    $e = oci_error($conn);
 				    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
@@ -45,7 +45,7 @@ if(login_check($conn)){
 				// Fetch the results of the query
 				//Toma los datos, revisa y mientras alla una fila crea una para la tabla. El foreach recorre las columnas que regresa el resultado
 				print "<table class='responsive' >\n";
-				echo "<tr>\n <th>ID</th>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Especialidad</th>\n <th>Duracion de Cita</th>\n </tr>\n";
+				echo "<tr>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Télefono</th>\n <th>Correo Eléctronico</th>\n </tr>\n";
 
 				while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
 				    print "<tr>\n";
@@ -62,53 +62,11 @@ if(login_check($conn)){
 			?>
 		</div>
 		<div class="large-12 column" style="height:20%;" align="center">
-			      <input type="button" value="Agregar nuevo" class="button" Style="background-color:GRAY" data-reveal-id="agregar" >
 	   		      <input type="button" value="Modificar" class="button" Style="background-color:GRAY">
 		</div>
 
 
-	 	<div id="agregar" class="reveal-modal close" data-reveal="" style="visibility: invisible; display: block; opacity: 1 " align="left">
-	        <fieldset>
-	        <legend><h4>Nuevo Médico</h4></legend>     	
-	     	<form action="queriesInsert.php" method="post">
-
-	     	<div class="row">
-	     	<div class="large-1 column">
-	        <label>ID</label>
-	        <input type="text" name="ID"> </input>
-	        </div>
-	        <div class="large-5 column">
-	        <label>Nombre(s)</label>
-	        <input type="text" name="fname"> </input>
-	    	</div>
-	    	<div class="large-6 column">
-	        <label>Apellido(s)</label>
-	        <input type="text" name="lname"> </input>
-	    	</div>
-	    	<div class="large-10 column">
-	        <label>Especialidad</label>
-	        <input type="text" name="specialty"> </input>
-	    	</div>
-	    	<div class="large-2 column">
-	        <label>Duración de la cita</label>
-			<select name="app_length">
-			  <option value="00:15">15 min</option>
-			  <option value="00:30">30 min</option>
-			  <option value="00:45">45 min</option>
-			  <option value="01:00">1 hora</option>
-			</select>
-			
-			</input> </p>
-	    	</div>
-	   		</div>
-
-	       </fieldset>
-	       
-			<input type="submit" name="agregar" value="Agregar" class="button" >
-			<input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
-			
-			</form>
-	    </div>
+	 
 
 
 	</body>

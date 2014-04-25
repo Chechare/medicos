@@ -74,7 +74,7 @@ $password = '';
 		<div>
 			<div class="alert alert-error alerta">
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<strong>Ups!</strong> Usuario y/o Contraseña incorrectos. Intente de nuevo.
+				Usuario y/o Contraseña <strong>incorrectos</strong>. Intente de nuevo.
 			</div>
 		</div>
 		<?php
@@ -84,7 +84,7 @@ $password = '';
 		<div>
 			<div class="alert alert-error alerta">
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<strong>Ups!</strong> You must login first.
+				No estás autorizado para acceder a esta página, por favor <strong>inicia sesión</strong>.
 			</div>
 		</div>
 		<?php
