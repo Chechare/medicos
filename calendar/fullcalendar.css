@@ -70,16 +70,16 @@ overflow-y: auto; /*for vertical scroll bar*/
 
 .column,
 .columns {
-  padding-left: 0.9375em;
-  padding-right: 0.9375em;
+  padding-left: 0em;
+  padding-right: 0em;
   width: 100%;
   float: left; }
 
   .column,
   .columns {
     position: relative;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 0.0em;
+    padding-right: 0.0em;
     float: left; }
 
   .large-1 {

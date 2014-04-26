@@ -1,7 +1,7 @@
 <?php
 	include "connect.php";
 
-	if(isset($_POST['agregar'])){
+	if(isset($_POST['agregarMedico'])){
 
 			$ID = addslashes($_POST['ID']);
 			$fname = addslashes($_POST['fname']);
@@ -14,18 +14,25 @@
 			$objParse=oci_parse($conn, $strSql);
 			$objExecute= oci_execute($objParse,OCI_DEFAULT);
 
+			echo $strSql;
+
 			if($objExecute){
-				oci_commit($conn);
-				echo "<script> alert('¡Médico Agregado!')</script>";				
-				include "medico.php";
+				//oci_commit($conn);
+				echo "<meta charset='utf-8'/><script> alert('¡Médico Agregado!')</script>";				
+				//include "medico.php";
 			}
 			else{
 				$e = oci_error($objParse);  
-				echo "Error Add [".$e['message']."]";
 			}
 
-			oci_free_statement($strSql);
+			oci_free_statement($objParse);
+			oci_close($conn);
+
+			header('Location:medico.php?alert=true');  
 	}
+	/*if(isset($_POST['agregarCita'])){
+		
+	}*/
+
 	
-	oci_close($conn);
 ?>

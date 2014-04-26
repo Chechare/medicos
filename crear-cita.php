@@ -13,11 +13,11 @@ if(login_check($conn)==true){
 
       <script src="js/vendor/jquery.js"></script>
       <script src="js/foundation.min.js"></script>
-      <script src="js/vendor/modernizr.js"></script>    
-
-      <link rel="stylesheet" href="css/foundation.css" />
+      <script src="js/vendor/modernizr.js"></script> 
 
       <link href='./calendar/fullcalendar.css' rel='stylesheet' />
+      <link rel="stylesheet" href="css/foundation.css" />
+     
       <link href='./calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
 
       <script src='./calendar/lib/jquery-ui.custom.min.js'></script>
@@ -79,7 +79,7 @@ if(login_check($conn)==true){
       </script>
 
     </head>
-    <body>
+    <body style="background-color:white">
 
 
       <!-- Calendario -->
@@ -90,7 +90,54 @@ if(login_check($conn)==true){
       <!-- Ventana Emergente (Formulario)-->
       
       <div id="firstModal" class="reveal-modal close" data-reveal="" style="visibility: invisible; display: block; opacity: 1" align="left">
-          <h4>Nueva Cita</h4>
+        <div class="row vscrollbar">
+        <form action="queriesInsert.php" method="post">
+          
+        <fieldset>
+        <legend><h4>Nueva Cita</h4></legend>     
+       
+                <div class="large-12 column">
+                    <label><strong>¿Primera Visita?</strong> </label>
+                    <input type="radio" name="visita" value="si" checked><label>Si</label>
+                    <input type="radio" name="visita" value="no"><label>No</label>
+                </div>
+                           
+                <div class="large-6 column">
+                  <label>Nombre(s)</label>
+                  <input type="text" name="fname"> </input>
+                </div>
+                <div class="large-6 column">
+                  <label>Apellido(s)</label>
+                  <input type="text" name="lname"> </input>
+                </div>
+                
+                 <div class="large-6 column">
+                  <label>Teléfono</label>
+                  <input type="text" name="tel"> </input>
+                </div>
+                <div class="large-6 column">
+                  <label>Correo Eléctronico</label>
+                  <input type="text" name="email"> </input>
+                </div>
+
+                <div class="large-12 column">
+                    <label><strong>Detalles:</strong> </label>
+                    <textarea rows="4" cols="50" name="details" placeholder="Información útil que pueda servir para un dianóstico previo para el médico."></textarea>
+                </div>
+
+       
+        </fieldset>
+
+          <input type="submit" name="agregarMedico" value="Agregar" class="button" >
+          <input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
+          </form>
+           </div>
+      </div>
+      
+         
+
+
+         <!-- <h4>Nueva Cita</h4>
           <p ><b id="demo"></b><p>
           <p>Inicio: <b id="horaInicio"></b></p>
           <p>Final: <b id="end"></b></p>
@@ -103,7 +150,7 @@ if(login_check($conn)==true){
         <input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
 
   		</form>
-      </div>
+      </div>-->
 
       
       

@@ -2,6 +2,10 @@
 include "connect.php";
 include "driver.php";
 sec_session_start();
+$alert = isset($_GET["alert"]) ? $_GET["alert"] : 0;
+if($alert){
+	echo "<script>alert('¡Médico Agregado!');</script>";
+}
 
 if(login_check($conn)){
 ?>
@@ -104,7 +108,7 @@ if(login_check($conn)){
 
 	       </fieldset>
 	       
-			<input type="submit" name="agregar" value="Agregar" class="button" >
+			<input type="submit" name="agregarMedico" value="Agregar" class="button" >
 			<input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
 			
 			</form>

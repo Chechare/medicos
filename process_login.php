@@ -8,7 +8,7 @@ if(isset($_POST['user'], $_POST['password'])) {
    $password = $_POST['password']; //La contraseña con hash
    if(login($user, $password, $conn)){
         //Inicio de sesión exitosa
-      if(isset($url)){
+      if(!isset($url)){
         $url = $_SESSION['url'];
       }else{
         $url = 'admin.php';
