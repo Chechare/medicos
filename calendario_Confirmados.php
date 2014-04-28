@@ -2,7 +2,7 @@
 include "driver.php";
 include 'connect.php';
 sec_session_start();
-if(login_check($conn) == true){
+if(login_check($conn)){
 	?>
 
 	<!DOCTYPE html>
@@ -19,11 +19,6 @@ if(login_check($conn) == true){
 	<script>
 
 		$(document).ready(function() {
-		
-			var date = new Date();
-			var d = date.getDate();
-			var m = date.getMonth();
-			var y = date.getFullYear();
 			
 			$('#calendar').fullCalendar({
 				editable: true,
@@ -163,8 +158,7 @@ if(login_check($conn) == true){
 					?>
 					</select>
 					<input type="submit"  value="Buscar" class="button" >
-					</h3>
-					
+					</h3>					
 				</form>
 			</div>
 			<div class="large-7 column">
