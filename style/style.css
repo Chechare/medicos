@@ -243,8 +243,8 @@ ul#menu li a:hover
 position: fixed;
   font-family: 'trebuchet ms', sans-serif;
   font-size: 100%;
-  height: 80px;
-  padding: 28px 0 5px 0;
+  height: 20px;
+  padding: 0px 0 5px 0;
   text-align: center; 
   background: #3B3939 url(footer.png) repeat-x;
   color: #A8AA94;
