@@ -39,7 +39,7 @@ if(login_check($conn)){
 							status: 'A'
 						},
 						error: function() {
-							alert('there was an error while fetching events!');
+							alert('error al cargar los eventos!');
 						},
 						color: 'teal',    // an option!
 						textColor: 'white',  // an option!
@@ -67,7 +67,7 @@ if(login_check($conn)){
 							  padding: 10, 
 							  textAlign: 'left',
 							  tip: true, // Give it a speech bubble tip with automatic corner detection
-							  name: 'dark' // Style it according to the preset 'cream' style
+							  name: 'dark' // Style  preset 
 						   }
 					});
 				}

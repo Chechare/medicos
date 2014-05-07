@@ -63,7 +63,7 @@ if(login_check($conn) == true) {
                     <li><label>Administración del Sitio</label></li>        
                     <li><a href="#" onclick="changeIframeSrc('./paciente.php')">Pacientes</a></li>
                     <li><a href="#" onclick="changeIframeSrc('medico.php')">Médicos</a></li>
-                    <li><a href="#" onclick="changeIframeSrc('./mapa.php?filtro=tipo%20=%20\'deportivo\'')">Horarios</a></li>
+                    <li><a href="#" onclick="changeIframeSrc('horario.php')">Horarios</a></li>
         </ul>
 
         </div>    
