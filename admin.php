@@ -9,7 +9,7 @@ if(login_check($conn) == true) {
 
     <head>
 
-        <script> 
+        <script>
             function changeIframeSrc(direccion) { 
                 var url=direccion;
                 document.getElementById('frameCambiante').src=url;
