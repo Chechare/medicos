@@ -206,12 +206,9 @@ if(isset($_POST['scheduleInsert'])){
 				oci_commit($conn);
 				$row = oci_fetch_array($prequery, OCI_ASSOC+OCI_RETURN_NULLS);
 				$nextpid=$row['NEXT'];
-				echo $nextpid;
-				
 				$p='P';
 				$PID=$p.$nextpid;
 				$PID=str_replace(' ', '', $PID);
-				echo $PID;
 				$PID=addslashes($PID);
 			}
 			else{
@@ -227,8 +224,6 @@ if(isset($_POST['scheduleInsert'])){
 
 			if($objExecute){
 				oci_commit($conn);
-				echo "<meta charset='utf-8'/><script> alert('¡Paciente Registrado!');</script>";				
-				
 			}
 			else{
 				$e = oci_error($objParse);  
@@ -244,13 +239,50 @@ if(isset($_POST['scheduleInsert'])){
 		$objExecute= oci_execute($objParse2,OCI_DEFAULT);
 
 		if($objExecute){
-				oci_commit($conn);
-				echo "<meta charset='utf-8'/><script> alert('¡Cita Registrada!');</script>";				
-				//include "medico.php";
 			}
 			else{
 				$e = oci_error($objParse2);  
 				header('Location:crear-cita.php?alert2=true');
+			}
+
+		oci_commit($conn);
+		oci_free_statement($objParse2);
+		
+		
+		$query="SELECT *  FROM patient WHERE='".$PID."')";
+		$query2="SELECT *  FROM appointment WHERE pid='".$PID."' AND drID='".$drID."' AND app_date=to_date('".$app_date."','DD-MM-YYYY HH24:MI')";
+
+		$objParse=oci_parse($conn, $query);
+
+		$objExecute= oci_execute($objParse,OCI_DEFAULT);
+
+			if($row = oci_fetch_array($prequery)){
+				$a4=false;
+				if (!isset($row[0])){
+					$a4=true;;
+				}
+			}
+			else{
+				$e = oci_error($objParse);  
+				$a4=true;
+			}
+
+		oci_commit($conn);
+		oci_free_statement($objParse);
+
+
+		$objParse2=oci_parse($conn, $query2);
+
+		$objExecute= oci_execute($objParse2,OCI_DEFAULT);
+
+		if($row = oci_fetch_array($prequery)){
+				if (!isset($row[0])){
+					header('Location:crear-cita.php?alert3=true alert4='.$a4);
+				}
+			}
+			else{
+				$e = oci_error($objParse2);  
+				header('Location:crear-cita.php?alert3=true alert4='.$a4);
 			}
 
 		oci_commit($conn);

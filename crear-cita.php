@@ -5,12 +5,23 @@ sec_session_start();
 
 $alert = isset($_GET["alert"]) ? $_GET["alert"] : 0;
 $alert2 = isset($_GET["alert2"]) ? $_GET["alert2"] : 0;
+$alert3 = isset($_GET["alert3"]) ? $_GET["alert3"] : 0;
+$alert4 = isset($_GET["alert4"]) ? $_GET["alert4"] : 0;
 
 if($alert){
-  echo "<script>alert('¡Cita y paciente registrados!');</script>";
+  echo "<script>alert('¡Paciente registrado!');</script>";
 }
 if($alert2){
   echo "<script>alert('¡Error! El Paciente puede no estar registrado');</script>";
+}
+if($alert3){
+  echo "<script>alert('¡Error! Horario no disponible Cita no creada');</script>";
+	if(!$alert4){
+  echo "<script>alert('Usuario si fue agregado, primera visita: NO');</script>";
+}
+ }
+if($alert4){
+  echo "<script>alert('¡Error! Usario no agregado');</script>";
 }
 
 if(login_check($conn)){
