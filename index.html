@@ -2,12 +2,7 @@
 <html>
 
 <head>
-  <script>
-            function changeIframeSrc(direccion) { 
-                var url=direccion;
-                document.getElementById('frameCambiante').src=url;
-        }
-  </script>
+
   <script src="js/vendor/modernizr.js"></script> 
   <meta charset="utf-8" />
   <title>Hospital El Paso | Inicio</title>
@@ -74,8 +69,8 @@
       </div>
       <div id="content">
         
-        <div class="large-10 column" style="height:100%">
-                <iframe id="frameCambiante" src="./crea-cliente.php" name="iframe_a" style="height:100%;width:100%"></iframe>
+        <div class="large-10 colum" style="height:450px">
+                <iframe src="./crea-cliente.php" name="iframe_a" style="height:100%;width:100%"></iframe>
         <div/>
       </div>
     </div>
@@ -84,8 +79,7 @@
         <script>
         $(document).foundation();
         </script>
-    <div id="content_footer"></div>
-    <div id="footer">
+    <div id="footer" Style="width:100%">
       <p>Todos los derechos reservados a <a href="http://localhost/GitServer/medicos/admin.php">Adview</a></p>
   </div>
 </body>

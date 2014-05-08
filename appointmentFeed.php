@@ -41,7 +41,7 @@ if (!$r) {
 $jsonrow=array();
 while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
    $jsonrow[]=array(
-            'title' => $row['PFNAME'].' '.$row['PLNAME'],
+            'title' => "Ocupado",
             'start' => $row['APP_START'],
             'end'   => $row['APP_END'],
             'description'=> $row['DESCRIPTION'],
