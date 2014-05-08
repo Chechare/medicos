@@ -162,7 +162,7 @@ if(login_check($conn)){
 		  <div class="large-1 column left" >
 			<noscript>
 			<input type="submit"  value="Buscar" class="button" style="height:2.3rem;font-size: 1.2rem; padding:0.36rem 0.39rem 0.5rem 0.39rem;">
-			<noscript>
+			</noscript>
 		  </div>
           </h3>
           
