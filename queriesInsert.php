@@ -287,4 +287,26 @@ if(isset($_POST['scheduleInsert'])){
 						header('Location:paciente.php');  
 							
 		}
+			if(isset($_POST['aprobarCita'])){
+			$stid = oci_parse($conn, "UPDATE appointment SET approved='A' WHERE pid=:myid AND drid=:mydr AND app_date=to_date(:mydate,'YYYY-MM-DD HH24:MI:SS')");
+						oci_bind_by_name($stid, ":myid", $_POST['pid']);
+						oci_bind_by_name($stid, ":mydr", $_POST['drid']);
+						oci_bind_by_name($stid, ":mydate", $_POST['app_date']);
+
+						if (!$stid) {
+							$e = oci_error($conn);
+							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+						}
+
+						$r = oci_execute($stid);
+						if (!$r) {
+							$e = oci_error($stid);
+							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+						}
+						oci_commit($conn);
+						oci_free_statement($stid);
+						oci_close($conn);
+						header('Location:calendario-solicitudes.php#');  
+							
+		}
 ?>
