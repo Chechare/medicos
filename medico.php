@@ -49,13 +49,22 @@ if(login_check($conn)){
 				// Fetch the results of the query
 				//Toma los datos, revisa y mientras alla una fila crea una para la tabla. El foreach recorre las columnas que regresa el resultado
 				print "<table class='responsive' >\n";
-				echo "<tr>\n <th>ID</th>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Especialidad</th>\n <th>Duracion de Cita</th>\n </tr>\n";
+				echo "<tr>\n <th>ID</th>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Especialidad</th>\n <th>Duracion de Cita</th>\n <th></th>\n</tr>\n";
 
 				while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
 				    print "<tr>\n";
 				    foreach ($row as $item) {
-				        print "    <td  style='text-align: center'>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . "</td>\n";
-				    }
+				        print "    <td  style='text-align: center'>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;")."</td>\n";
+					}
+					print "	   <td><form action='medico.php' method='post'>
+					<input type='hidden' name='drid' value='".$row['DRID']."'/>
+					<input type='hidden' name='fname' value='".$row['DFNAME']."'/>
+					<input type='hidden' name='lname' value='".$row['DLNAME']."'/>
+					<input type='hidden' name='spec' value='".$row['SPECIALTY']."'/>
+					<input type='hidden' name='lenght' value='".$row['LENGHT']."'/>
+					<input type='hidden' name='mod' value=true/>
+					<input type='submit' value='Modificar' class='button' style='height:2.3rem;font-size: 1.2rem; padding:0.2rem 0.1rem 0.1rem 0.2rem;' >
+					</form></td>\n";
 				    print "</tr>\n";
 				}
 				print "</table>\n";
@@ -67,8 +76,7 @@ if(login_check($conn)){
 		</div>
 		<div class="large-12 column" style="height:20%;" align="center">
 			      <input type="button" value="Agregar nuevo" class="button" Style="background-color:GRAY" data-reveal-id="agregar" >
-	   		      <input type="button" value="Modificar" class="button" Style="background-color:GRAY">
-		</div>
+	   		     </div>
 
 
 	 	<div id="agregar" class="reveal-modal close" data-reveal="" style="visibility: invisible; display: block; opacity: 1 " align="left">
@@ -113,6 +121,59 @@ if(login_check($conn)){
 			
 			</form>
 	    </div>
+		<?php if($_POST['mod']){ ?>
+		<div id="mod" class="reveal-modal open" data-reveal="" style="visibility: visible; display: block; opacity: 1 " align="left">
+	        <fieldset>
+	        <legend><h4>Modificar Médico</h4></legend>     	
+	     	<form action="queriesInsert.php" method="post">
+
+	     	<div class="row">
+	     	<div class="large-1 column">
+	        <label>ID</label>
+	        <input type="text" name="ID" value=<?php echo "'".$_POST['drid']."'" ?>> </input>
+	        </div>
+	        <div class="large-5 column">
+	        <label>Nombre(s)</label>
+	        <input type="text" name="fname" value=<?php echo "'".$_POST['fname']."'" ?>> </input>
+	    	</div>
+	    	<div class="large-6 column">
+	        <label>Apellido(s)</label>
+	        <input type="text" name="lname" value=<?php echo "'".$_POST['lname']."'" ?>> </input>
+	    	</div>
+	    	<div class="large-10 column">
+	        <label>Especialidad</label>
+	        <input type="text" name="specialty" value=<?php echo "'".$_POST['spec']."'" ?>> </input>
+	    	</div>
+	    	<div class="large-2 column">
+	        <label>Duración de la cita</label>
+			<select name="app_length">
+			<?php 
+			if($_POST['lenght']=="00:15"){echo "<option value='00:15' selected>15 min</option>\n";}
+			else{echo "<option value='00:15'>15 min</option>\n";}
+			
+			if($_POST['lenght']=="00:30"){echo "<option value='00:30' selected>30 min</option>\n";}
+			else{echo "<option value='00:30'>30 min</option>\n";}
+			
+			if($_POST['lenght']=="00:45"){echo "<option value='00:45' selected>45 min</option>\n";}
+			else{echo "<option value='00:45'>45 min</option>\n";}
+			
+			if($_POST['lenght']=="01:00"){echo "<option value='01:00' selected>1 hora</option>\n";}
+			else{echo "<option value='01:00'>1 hora</option>\n";}
+			  ?>
+			</select>
+			
+			</input> </p>
+	    	</div>
+	   		</div>
+
+	       </fieldset>
+	       
+			<input type="submit" name="modMedico" value="Modificar" class="button" >
+			<input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
+			
+			</form>
+	    </div>
+		<?php } ?>
 
 
 	</body>
@@ -121,6 +182,7 @@ if(login_check($conn)){
 		<script>
 		 function closeModal(){ 
 	        $('#agregar').foundation('reveal', 'close'); //Cierra ventana emergente
+			$('#mod').foundation('reveal', 'close'); //Cierra ventana emergente
 	      }	
 		</script>
 

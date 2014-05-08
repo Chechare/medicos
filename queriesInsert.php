@@ -241,4 +241,50 @@ if(isset($_POST['scheduleInsert'])){
 		header('Location:crear-cita.php?alert=true');  
 
 		}
+		if(isset($_POST['modMedico'])){
+			$stid = oci_parse($conn, "UPDATE doctor SET dfname=:myfname, dlname=:mylname, specialty=:myspec, app_lenght=to_date(:mylenght,'HH24:MI') WHERE drid=:mydr");
+						oci_bind_by_name($stid, ":myfname", $_POST['fname']);
+						oci_bind_by_name($stid, ":mylname", $_POST['lname']);
+						oci_bind_by_name($stid, ":myspec", $_POST['specialty']);
+						oci_bind_by_name($stid, ":mylenght", $_POST['app_length']);
+						oci_bind_by_name($stid, ":mydr", $_POST['ID']);
+						if (!$stid) {
+							$e = oci_error($conn);
+							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+						}
+
+						$r = oci_execute($stid);
+						if (!$r) {
+							$e = oci_error($stid);
+							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+						}
+						oci_commit($conn);
+						oci_free_statement($stid);
+						oci_close($conn);
+						header('Location:medico.php');  
+							
+		}
+			if(isset($_POST['modPaciente'])){
+			$stid = oci_parse($conn, "UPDATE patient SET pfname=:myfname, plname=:mylname, phone=:myphone, email=:mymail WHERE pid=:myid");
+						oci_bind_by_name($stid, ":myfname", $_POST['fname']);
+						oci_bind_by_name($stid, ":mylname", $_POST['lname']);
+						oci_bind_by_name($stid, ":myphone", $_POST['phone']);
+						oci_bind_by_name($stid, ":mymail", $_POST['mail']);
+						oci_bind_by_name($stid, ":myid", $_POST['ID']);
+						if (!$stid) {
+							$e = oci_error($conn);
+							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+						}
+
+						$r = oci_execute($stid);
+						if (!$r) {
+							$e = oci_error($stid);
+							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+						}
+						oci_commit($conn);
+						oci_free_statement($stid);
+						oci_close($conn);
+						header('Location:paciente.php');  
+							
+		}
 ?>

@@ -52,7 +52,7 @@ CONSTRAINT fk_appointmentDr FOREIGN KEY (DrId)
 REFERENCES Doctor(DrId)
 );
 
-CREATE VIEW patient_data AS SELECT pfname,plname nombre,phone,email FROM Patient;
+CREATE VIEW patient_data AS SELECT pid,pfname,plname,phone,email FROM Patient;
 
 CREATE VIEW app_data AS
 SELECT
