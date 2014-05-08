@@ -128,4 +128,117 @@ if(isset($_POST['scheduleInsert'])){
 		}
 		header('Location:horario.php?dr='.$_POST['drid']);  
 	}	
+
+	if(isset($_POST['crearCitaRegistrado'])){
+			$phone=addslashes($_POST['phone']);
+			$email=addslashes($_POST['email']);
+
+			$drID=addslashes($_POST['drID']);
+			$app_date=addslashes($_POST['app_date']);
+			$description=addslashes($_POST['description']);
+			$approved=addslashes($_POST['approved']);
+
+			$query="SELECT PID FROM patient WHERE phone=".$phone." OR email='".$email."'";
+			
+			$objParse=oci_parse($conn, $query);
+
+			$objExecute= oci_execute($objParse,OCI_DEFAULT);
+
+				if($objExecute){
+					//oci_commit($conn);
+					echo "<meta charset='utf-8'/><script> alert('¡Paciente Registrado!');</script>";				
+					//include "medico.php";
+				}
+				else{
+					$e = oci_error($objParse);  
+				}
+
+			$row = oci_fetch_array($objParse, OCI_ASSOC+OCI_RETURN_NULLS);
+			
+			oci_free_statement($objParse);
+
+
+			if(!is_null($row['PID'])){
+				$PID=$row['PID'];
+
+				$query2="INSERT INTO appointment VALUES('".$PID."','".$drID."',to_date('".$app_date."','DD-MM-YYYY HH24:MI'),'".$description."','".$approved."')";
+
+				$objParse2=oci_parse($conn, $query2);
+
+				$objExecute= oci_execute($objParse2,OCI_DEFAULT);
+
+				if($objExecute){
+					//oci_commit($conn);
+					echo "<meta charset='utf-8'/><script> alert('¡Cita Registrada!');</script>";				
+					//include "medico.php";
+				}
+				else{
+					$e = oci_error($objParse2);  
+				}
+
+				oci_commit($conn);
+				oci_free_statement($objParse2); 
+				}
+				oci_close($conn);
+				header('Location:crear-cita.php?alert=true'); 
+			else{
+				oci_close($conn);
+				header('Location:crear-cita.php?alert2=true');  
+			}
+
+		
+	}
+	if(isset($_POST['agregarCitaRegistro'])){
+		$PID=addslashes($_POST['PID']);
+		$pFName=addslashes($_POST['fname']);
+		$pLName=addslashes($_POST['lname']);
+		$phone=addslashes($_POST['phone']);
+		$email=addslashes($_POST['email']);
+
+		$drID=addslashes($_POST['drID']);
+		$app_date=addslashes($_POST['app_date']);
+		$description=addslashes($_POST['description']);
+		$approved=addslashes($_POST['approved']);
+
+		$query="INSERT INTO patient VALUES('".$PID."','".$pFName."','".$pLName."',".$phone.",'".$email."')";
+		$query2="INSERT INTO appointment VALUES('".$PID."','".$drID."',to_date('".$app_date."','DD-MM-YYYY HH24:MI'),'".$description."','".$approved."')";
+
+		$objParse=oci_parse($conn, $query);
+
+		$objExecute= oci_execute($objParse,OCI_DEFAULT);
+
+			if($objExecute){
+				//oci_commit($conn);
+				echo "<meta charset='utf-8'/><script> alert('¡Paciente Registrado!');</script>";				
+				//include "medico.php";
+			}
+			else{
+				$e = oci_error($objParse);  
+			}
+
+		oci_commit($conn);
+		oci_free_statement($objParse);
+
+
+		$objParse2=oci_parse($conn, $query2);
+
+		$objExecute= oci_execute($objParse2,OCI_DEFAULT);
+
+		if($objExecute){
+				//oci_commit($conn);
+				echo "<meta charset='utf-8'/><script> alert('¡Cita Registrada!');</script>";				
+				//include "medico.php";
+			}
+			else{
+				$e = oci_error($objParse2);  
+			}
+
+		oci_commit($conn);
+		oci_free_statement($objParse2);
+
+
+		oci_close($conn);
+		header('Location:crear-cita.php?alert=true');  
+
+		}
 ?>
