@@ -65,3 +65,43 @@ FROM doctor NATURAL JOIN patient NATURAL JOIN appointment;
 CREATE VIEW hour_data AS
 SELECT day,drid,to_char(starthour,'HH24:MI') AS starthour,to_char(endhour,'HH24:MI') AS endhour
 FROM schedule;
+
+CREATE OR REPLACE TRIGGER horario
+BEFORE INSERT ON appointment
+FOR EACH ROW
+	DECLARE
+		INICIO DATE;
+		FIN DATE;
+		NOW DATE;
+		day char (15);
+	BEGIN
+		day:= to_char(:new.app_date,'DAY');
+		NOW:= to_date(to_char(:new.app_date,'HH24:MI'),'HH24:MI');
+		IF day='MONDAY' THEN 
+			SELECT to_date(to_char(STARTHOUR,'HH24:MI'),'HH24:MI') INTO INICIO FROM schedule s WHERE s.day='lunes' AND drid=:new.drid;
+			SELECT to_date(to_char(ENDHOUR,'HH24:MI'),'HH24:MI') INTO FIN FROM schedule s WHERE s.day='lunes' AND drid=:new.drid;
+		ELSIF day='TUESDAY' THEN 
+			SELECT to_date(to_char(STARTHOUR,'HH24:MI'),'HH24:MI') INTO INICIO FROM schedule s WHERE s.day='martes' AND drid=:new.drid;
+			SELECT to_date(to_char(ENDHOUR,'HH24:MI'),'HH24:MI') INTO FIN FROM schedule s WHERE s.day='martes' AND drid=:new.drid;			
+		ELSIF day='WEDNESDAY' THEN 
+			SELECT to_date(to_char(STARTHOUR,'HH24:MI'),'HH24:MI') INTO INICIO FROM schedule s WHERE s.day='miercoles' AND drid=:new.drid;
+			SELECT to_date(to_char(ENDHOUR,'HH24:MI'),'HH24:MI') INTO FIN FROM schedule s WHERE s.day='miercoles' AND drid=:new.drid;
+		ELSIF day='THURSDAY' THEN 
+			SELECT to_date(to_char(STARTHOUR,'HH24:MI'),'HH24:MI') INTO INICIO FROM schedule s WHERE s.day='jueves' AND drid=:new.drid;
+			SELECT to_date(to_char(ENDHOUR,'HH24:MI'),'HH24:MI') INTO FIN FROM schedule s WHERE s.day='jueves' AND drid=:new.drid;			
+		ELSIF day='FRIDAY' THEN 
+			SELECT to_date(to_char(STARTHOUR,'HH24:MI'),'HH24:MI') INTO INICIO FROM schedule s WHERE s.day='viernes' AND drid=:new.drid;
+			SELECT to_date(to_char(ENDHOUR,'HH24:MI'),'HH24:MI') INTO FIN FROM schedule s WHERE s.day='viernes' AND drid=:new.drid;			
+		ELSIF day='SATURDAY' THEN 
+			SELECT to_date(to_char(STARTHOUR,'HH24:MI'),'HH24:MI') INTO INICIO FROM schedule s WHERE s.day='sabado' AND drid=:new.drid;
+			SELECT to_date(to_char(ENDHOUR,'HH24:MI'),'HH24:MI') INTO FIN FROM schedule s WHERE s.day='sabado' AND drid=:new.drid;			
+		ELSIF day='SUNDAY' THEN 
+			SELECT to_date(to_char(STARTHOUR,'HH24:MI'),'HH24:MI') INTO INICIO FROM schedule s WHERE s.day='domingo' AND drid=:new.drid;
+			SELECT to_date(to_char(ENDHOUR,'HH24:MI'),'HH24:MI') INTO FIN FROM schedule s WHERE s.day='domingo' AND drid=:new.drid;			
+		END IF;
+
+		IF NOW<INICIO OR NOW>FIN THEN			
+			raise_application_error(-20000, 'Fuera de horario');
+		END IF;
+	END;
+/
