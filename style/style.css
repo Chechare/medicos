@@ -123,20 +123,19 @@ ol li
 { font: normal 300% 'century gothic', arial, sans-serif;
   border-bottom: 0;
   text-transform: none;
-  margin: 0 0 0 9px;
-  background: #5A5A5A no-repeat 0 0;}
+  margin: 0 0 0 9px;}
 
 #logo_text h1, #logo_text h1 a, #logo_text h1 a:hover 
 { padding: 22px 0 0 0;
-  color: #FFF;
+  color: #1A9A00;
   letter-spacing: 0.1em;
   text-decoration: none;}
 
 #logo_text h1 a .logo_colour
-{ color: #E4EC04;}
+{ color: #1A9A00;}
 
 #logo_text a:hover .logo_colour
-{ color: #FFF;}
+{ color: #1A9A00;}
 
 #logo_text h2
 { font-size: 120%;
