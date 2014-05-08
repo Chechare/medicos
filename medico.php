@@ -121,7 +121,7 @@ if(login_check($conn)){
 			
 			</form>
 	    </div>
-		<?php if($_POST['mod']){ ?>
+		<?php if(isset($_POST['mod'])&&$_POST['mod']){ ?>
 		<div id="mod" class="reveal-modal open" data-reveal="" style="visibility: visible; display: block; opacity: 1 " align="left">
 	        <fieldset>
 	        <legend><h4>Modificar Médico</h4></legend>     	

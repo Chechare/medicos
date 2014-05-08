@@ -45,7 +45,7 @@ if(login_check($conn)){
 				// Fetch the results of the query
 				//Toma los datos, revisa y mientras alla una fila crea una para la tabla. El foreach recorre las columnas que regresa el resultado
 				print "<table class='responsive' >\n";
-				echo "<tr>\n <th>ID</th>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Télefono</th>\n <th>Correo Eléctronico</th>\n </tr>\n";
+				echo "<tr>\n <th>ID</th>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Télefono</th>\n <th>Correo Eléctronico</th>\n <th></th>\n </tr>\n";
 
 				while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
 				    print "<tr>\n";
@@ -71,11 +71,9 @@ if(login_check($conn)){
 				oci_close($conn);
 			?>
 		</div>
-		<div class="large-12 column" style="height:20%;" align="center">
-	   		      <input type="button" value="Modificar" class="button" Style="background-color:GRAY">
-		</div>
 
-<?php if($_POST['mod']){ ?>
+
+<?php if(isset($_POST['mod'])&&$_POST['mod']){ ?>
 		<div id="mod" class="reveal-modal open" data-reveal="" style="visibility: visible; display: block; opacity: 1 " align="left">
 	        <fieldset>
 	        <legend><h4>Modificar Paciente</h4></legend>     	
