@@ -1,9 +1,9 @@
 <?php
-include "connect.php";
-include "driver.php";
-sec_session_start();
+//include "connect.php";
+//include "driver.php";
+//sec_session_start();
 
-if(login_check($conn)){
+//if(login_check($conn)){
 ?>
 	<!doctype html>
 	<html class="no-js" lang="en">
@@ -23,7 +23,7 @@ if(login_check($conn)){
 			<h1 >Horarios de Atención</h1>
 		</div>
 	<div class="row">
-			<form action="calendario_Confirmados.php" method="get">
+			<form action="horario.php" method="get">
 				<h3><div class="large-2 column left" style="padding:0.36rem 0.39rem 0.5rem 4.2rem">Médico:</div>
 					<div class="large-8 column left">
 					<select name='dr' onchange='this.form.submit()'>
@@ -76,97 +76,122 @@ if(login_check($conn)){
 				</form>
 		</div>
 
-			<?php
-				$options="<option value='00:00' >12:00 AM</option>\n<option value='00:30' >12:30 AM</option>\n";
-				for($i=1;$i<12;$i++){
-					if($i>9){
-						$options= $options."<option value='".$i.":00' >".$i.":00 AM</option> \n";
-						$options= $options."<option value='".$i.":30' >".$i.":30 AM</option> \n";
-					}
-					else{
-						$options= $options."<option value='0".$i.":00' >0".$i.":00 AM</option> \n";
-						$options= $options."<option value='0".$i.":30' >0".$i.":30 AM</option> \n";			
-					}
-				}
-				$options= $options."<option value='12:00' >12:00 PM</option> \n";
-				$options= $options."<option value='12:30' >12:30 PM</option> \n";
-				for($i=1;$i<12;$i++){
-					if($i>9){
-						$options= $options."<option value='".($i+12).":00' >".$i.":00 PM</option> \n";
-						$options= $options."<option value='".($i+12).":30' >".$i.":30 PM</option> \n";
-					}
-					else{
-						$options= $options."<option value='".($i+12).":00' >0".$i.":00 PM</option> \n";
-						$options= $options."<option value='".($i+12).":30' >0".$i.":30 PM</option> \n";			
-					}
-				}
-			?>
 		<div class="row">
-			<form name="horarios" action="demo_form_action.asp" method="post">
+			<form action="queriesInsert.php" method="post">
+			<input type="hidden" name='drid' value=<?php if(isset($_GET['dr'])){ echo "'".$_GET['dr']."'";} else{ echo "'D01'";} ?> />
 			<div class="row">
 					<div class="large-1 column left" style="width:8rem;padding-left:1.3rem">
 						<h5 style="text-align:center">Domingo</h5><br>
 						De: <select name="1start" >
-						<?php echo $options;?>
+						<?php 
+						//TODO
+						$day='domingo';
+						$op='s';
+						include "hourOptions.php";?>
 						</select><br>
 						A: <select name="1end" >
-						<?php echo $options;?>
+						
+						<?php 
+						$day='domingo';
+						$op='e';
+						include "hourOptions.php";?>
 						</select><br>
 					</div>
 					<div class="large-1 column left" style="width:8rem;padding-left:1.3rem">
 						<h5 style="text-align:center">Lunes</h5><br>
 						De: <select name="2start" >
-						<?php echo $options;?>
+						<?php 
+						$day='lunes';
+						$op='s';
+						include "hourOptions.php";?>
 						</select><br>
 						A: <select name="2end" >
-						<?php echo $options;?>
+						<?php 
+						$day='lunes';
+						$op='e';
+						include "hourOptions.php";?>
 						</select><br>
 					</div>
 					<div class="large-1 column left"style="width:8rem;padding-left:1.3rem">
 						<h5 style="text-align:center">Martes</h5><br>
 						De: <select name="3start" >
-						<?php echo $options;?>
+						<?php 
+						$day='martes';
+						$op='s';
+						include "hourOptions.php";?>
 						</select><br>
 						A: <select name="3end" >
-						<?php echo $options;?>
+						<?php 
+						$day='martes';
+						$op='e';
+						include "hourOptions.php";?>
 						</select><br>
 					</div>
 					<div class="large-1 column left" style="width:8rem;padding-left:1.3rem">
 						<h5 style="text-align:center">Miercoles</h5><br>
 						De: <select name="4start" >
-						<?php echo $options;?>
+						<?php 
+						$day='miercoles';
+						$op='s';
+						include "hourOptions.php";?>
 						</select><br>
 						A: <select name="4end" >
-						<?php echo $options;?>
+						<?php 
+						$day='miercoles';
+						$op='e';
+						include "hourOptions.php";?>
 						</select><br>
 					</div>
 					<div class="large-1 column left" style="width:8rem;padding-left:1.3rem">
 						<h5 style="text-align:center">Jueves</h5><br>
 						De: <select name="5start" >
-						<?php echo $options;?>
+						<?php 
+						$day='jueves';
+						$op='s';
+						include "hourOptions.php";?>
 						</select><br>
 						A: <select name="5end" >
-						<?php echo $options;?>
+						<?php 
+						$day='jueves';
+						$op='e';
+						include "hourOptions.php";?>
 						</select><br>
 					</div>
 					<div class="large-1 column left" style="width:8rem;padding-left:1.3rem">
 						<h5 style="text-align:center">Viernes</h5><br>
 						De: <select name="6start" >
-						<?php echo $options;?>
+						<?php 
+						$day='viernes';
+						$op='s';
+						include "hourOptions.php";?>
 						</select><br>
 						A: <select name="6end" >
-						<?php echo $options;?>
+						<?php 
+						$day='viernes';
+						$op='e';
+						include "hourOptions.php";?>
 						</select><br>
 					</div>
 					<div class="large-1 column left" style="width:8rem;padding-left:1.3rem">
 						<h5 style="text-align:center">Sabado</h5><br>
 						De: <select name="7start" >
-						<?php echo $options;?>
+						<?php 
+						$day='sabado';
+						$op='s';
+						include "hourOptions.php";?>
 						</select><br>
 						A: <select name="7end" >
-						<?php echo $options;?>
+						<?php 
+						$day='sabado';
+						$op='e';
+						include "hourOptions.php";?>
 						</select><br>
 					</div>
+			</div>
+			<div class='row'>
+				<div class="large-2 columns large-centered">
+					<input type="submit" name='scheduleInsert' value="Actualizar" class="button">
+				</div>
 			</div>
 			</form>
 		</div>
@@ -197,13 +222,13 @@ if(login_check($conn)){
 				//El foreach recorre las columnas que regresa el resultado
 			
 				//cerrar conexion
+				
 				oci_free_statement($stid);
 				oci_close($conn);
 			?>
 		</div>
-		
-	</body>
 
+	</body>
 
 
 
@@ -214,9 +239,9 @@ if(login_check($conn)){
 	</html>
 
 <?php
-	}else{		
-   	 	$url="http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-   		$_SESSION['url'] =$url;
-   		header('Location: ./login.php?err=2');
-	}
+	//}else{		
+   	 //	$url="http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+   		//$_SESSION['url'] =$url;
+   		//header('Location: ./login.php?err=2');
+	//}
 ?>

@@ -56,6 +56,76 @@
 			oci_close($conn);
 		
 	}
-
+if(isset($_POST['scheduleInsert'])){
+		oci_close($conn);
+		$startArray=array(1 => $_POST['1start'],
+						2 => $_POST['2start'],
+						3 =>$_POST['3start'],
+						4 =>$_POST['4start'],
+						5 =>$_POST['5start'],
+						6 =>$_POST['6start'],
+						7 =>$_POST['7start']
+		);
 	
+		$endArray=array(1 =>$_POST['1end'],
+						2 =>$_POST['2end'],
+						3 =>$_POST['3end'],
+						4 =>$_POST['4end'],
+						5 =>$_POST['5end'],
+						6 =>$_POST['6end'],
+						7 =>$_POST['7end']
+		);
+	$days=array(1 =>'domingo',
+							2 =>'lunes',
+							3 =>'martes',
+							4 =>'miercoles',
+							5 =>'jueves',
+							6 =>'viernes',
+							7 =>'sabado'
+							);
+		for($i=1;$i<8;$i++){
+			include "connect.php";
+			$stid = oci_parse($conn, "INSERT INTO schedule VALUES(:myday,:mydr,to_date(:mystart,'HH24:MI'),to_date(:myend,'HH24:MI'))");
+			$myday=$days[$i];
+			oci_bind_by_name($stid, ":myday", $myday);
+			oci_bind_by_name($stid, ":mydr", $_POST['drid']);
+			oci_bind_by_name($stid, ":mystart", $startArray[$i]);
+			oci_bind_by_name($stid, ":myend", $endArray[$i]);
+					// Perform the logic of the query
+					// Ejecuta el querie
+					$r = oci_execute($stid);
+					if (!$r) {
+						//$e = oci_error($stid);
+						$stid = oci_parse($conn, "UPDATE schedule SET starthour=to_date(:mystart,'HH24:MI'), endhour=to_date(:myend,'HH24:MI') WHERE day=:myday AND drid=:mydr");
+						$myday=$days[$i];
+						oci_bind_by_name($stid, ":myday", $myday);
+						oci_bind_by_name($stid, ":mydr", $_POST['drid']);
+						oci_bind_by_name($stid, ":mystart", $startArray[$i]);
+						oci_bind_by_name($stid, ":myend", $endArray[$i]);
+						if (!$stid) {
+									$e = oci_error($conn);
+									trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+								}
+
+								// Perform the logic of the query
+								// Ejecuta el querie
+								$r = oci_execute($stid);
+								if (!$r) {
+									$e = oci_error($stid);
+									trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+								}
+					}
+
+			// Fetch the results of the query
+			//Toma los datos, revisa y mientras alla una fila crea una para la tabla. 
+			//El foreach recorre las columnas que regresa el resultado
+		
+			//cerrar conexion
+			oci_commit ($conn);
+			oci_free_statement($stid);
+			oci_close($conn);
+				
+		}
+		header('Location:horario.php?dr='.$_POST['drid']);  
+	}	
 ?>
