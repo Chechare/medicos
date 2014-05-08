@@ -189,7 +189,7 @@ if(isset($_POST['scheduleInsert'])){
 		
 	}
 	if(isset($_POST['agregarCitaRegistro'])){
-		$PID=addslashes($_POST['PID']);
+		
 		$pFName=addslashes($_POST['fname']);
 		$pLName=addslashes($_POST['lname']);
 		$phone=addslashes($_POST['phone']);
@@ -199,7 +199,25 @@ if(isset($_POST['scheduleInsert'])){
 		$app_date=addslashes($_POST['app_date']);
 		$description=addslashes($_POST['description']);
 		$approved=addslashes($_POST['approved']);
+		$prequery=oci_parse($conn, "Select to_char(patientID_seq.nextval,'009') AS next from dual");
+		$preobjExecute= oci_execute($prequery,OCI_DEFAULT);
 
+			if($preobjExecute){
+				oci_commit($conn);
+				$row = oci_fetch_array($prequery, OCI_ASSOC+OCI_RETURN_NULLS);
+				$nextpid=$row['NEXT'];
+				echo $nextpid;
+				
+				$p='P';
+				$PID=$p.$nextpid;
+				$PID=str_replace(' ', '', $PID);
+				echo $PID;
+				$PID=addslashes($PID);
+			}
+			else{
+				$e = oci_error($prequery);  
+				header('Location:crear-cita.php?alert2=true');
+			}
 		$query="INSERT INTO patient VALUES('".$PID."','".$pFName."','".$pLName."',".$phone.",'".$email."')";
 		$query2="INSERT INTO appointment VALUES('".$PID."','".$drID."',to_date('".$app_date."','DD-MM-YYYY HH24:MI'),'".$description."','".$approved."')";
 
@@ -208,12 +226,13 @@ if(isset($_POST['scheduleInsert'])){
 		$objExecute= oci_execute($objParse,OCI_DEFAULT);
 
 			if($objExecute){
-				//oci_commit($conn);
+				oci_commit($conn);
 				echo "<meta charset='utf-8'/><script> alert('¡Paciente Registrado!');</script>";				
-				//include "medico.php";
+				
 			}
 			else{
 				$e = oci_error($objParse);  
+				header('Location:crear-cita.php?alert2=true');
 			}
 
 		oci_commit($conn);
@@ -225,12 +244,13 @@ if(isset($_POST['scheduleInsert'])){
 		$objExecute= oci_execute($objParse2,OCI_DEFAULT);
 
 		if($objExecute){
-				//oci_commit($conn);
+				oci_commit($conn);
 				echo "<meta charset='utf-8'/><script> alert('¡Cita Registrada!');</script>";				
 				//include "medico.php";
 			}
 			else{
 				$e = oci_error($objParse2);  
+				header('Location:crear-cita.php?alert2=true');
 			}
 
 		oci_commit($conn);

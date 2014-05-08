@@ -252,8 +252,8 @@ if(login_check($conn)){
               $drID="D01";                        
             }
 
-            $stid = oci_parse($conn, "SELECT DFNAME||' '||DLNAME AS name FROM doctor_data WHERE drid='".$drID."'");
-            if (!$stid) {
+           $stid = oci_parse($conn, "SELECT DFNAME||' '||DLNAME AS name FROM doctor_data WHERE drid='".$drID."'");
+		   if (!$stid) {
               $e = oci_error($conn);
               trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
             }
@@ -362,9 +362,6 @@ if(login_check($conn)){
                   <input type="hidden" name='drID' value=<?php if(isset($_GET['dr'])){ echo "'".$_GET['dr']."'";} else{ echo "'D01'";} ?> />
                   <input type="hidden" name='app_date' id="app_date"></input>
                   <input type="hidden" name='approved' value="A"></input>
-
-                  <input type="hidden" name='PID' value="P667">
-                  
                   <input type="submit" name="agregarCitaRegistro" value="Agregar" class="button" >
                   <input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
                 </form>

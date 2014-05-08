@@ -105,3 +105,9 @@ FOR EACH ROW
 		END IF;
 	END;
 /
+
+
+CREATE SEQUENCE patientID_seq
+minvalue 1
+maxvalue 999
+increment by 1;
