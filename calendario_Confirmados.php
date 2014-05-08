@@ -8,6 +8,7 @@ if(login_check($conn)){
 	<!DOCTYPE html>
 	<html>
 	<head>
+	<link rel="stylesheet" href="css/foundation.css" />
 	<link href='./calendar/fullcalendar.css' rel='stylesheet' />
 	<link href='./calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
 	<script src='./calendar/lib/jquery.min.js'></script>
@@ -15,7 +16,8 @@ if(login_check($conn)){
 	<script src='./calendar/fullcalendar.min.js'></script>
 	<script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
 	<script src="./js/jquery.qtip-1.0.0-rc3.min.js"></script> 
-
+	<link type="text/css" media="screen" rel="stylesheet" href="responsive-tables/responsive-tables.css" />  
+	<script type="text/javascript" src="responsive-tables/responsive-tables.js"></script>
 	<script>
 
 		$(document).ready(function() {
@@ -73,31 +75,6 @@ if(login_check($conn)){
 				}
 			});
 
-		$('#calendar1').fullCalendar({
-				editable: true,
-				defaultView:'basicDay',
-				header: {
-	            left: '',
-	            center: 'prev,next today',
-	            right: ''
-	          },
-				eventSources: [
-
-					// your event source
-					{
-						url: 'appointmentFeed.php', // use the `url` property
-						color: 'blue',    // an option!
-						textColor: 'white',  // an option!
-						allDayDefault: false,
-						startEditable: false,
-						editable: false
-					}
-
-					// any other sources...
-
-				]
-			});
-
 			
 		});
 
@@ -112,10 +89,11 @@ if(login_check($conn)){
 	</style>
 	</head>
 	<body>
-			<div class="row">
+		<div class="row">
 			<form action="calendario_Confirmados.php" method="get">
-				<h3>Doctor:
-					<select name='dr'>
+				<h3><div class="large-2 column left" style="padding:0.36rem 0.39rem 0.5rem 2.2rem">Médico:</div>
+					<div class="large-8 column left">
+					<select name='dr' onchange='this.form.submit()'>
 					<?php
 						//iniciar la conexión
 						include "connect.php";
@@ -157,17 +135,61 @@ if(login_check($conn)){
 
 					?>
 					</select>
-					<input type="submit"  value="Buscar" class="button" >
+					</div>
+					<div class="large-1 column left" >
+						<noscript>
+						<input type="submit"  value="Buscar" class="button" style="height:2.3rem;font-size: 1.2rem; padding:0.36rem 0.39rem 0.5rem 0.39rem;">
+						</noscript>
+					</div>
 					</h3>					
 				</form>
-			</div>
+		</div>
 			<div class="large-7 column">
 				<div id='calendar' style="width:90%" ></div>
 			</div>
-			<div  class="large-5 column" >
+			<div  class="large-5 column " >
 				<h1>Citas Confirmadas<h2>
-				<div id='calendar1' style="width:100%" ></div>
+				<div class="large-12 column vscrollbar" align="center" style="height:30%;" >
+					<?php
+						include "connect.php";
+
+						// Prepare the statement
+						//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
+						$stid = oci_parse($conn, 'SELECT * FROM doctor_data ORDER BY drid');
+						if (!$stid) {
+							$e = oci_error($conn);
+							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+						}
+
+						// Perform the logic of the query
+						// Ejecuta el querie
+						$r = oci_execute($stid);
+						if (!$r) {
+							$e = oci_error($stid);
+							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+						}
+
+						// Fetch the results of the query
+						//Toma los datos, revisa y mientras alla una fila crea una para la tabla. El foreach recorre las columnas que regresa el resultado
+						print "<table class='responsive' >\n";
+						echo "<tr>\n <th>ID</th>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Especialidad</th>\n <th>Duracion de Cita</th>\n </tr>\n";
+
+						while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
+							print "<tr>\n";
+							foreach ($row as $item) {
+								print "    <td  style='text-align: center'>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . "</td>\n";
+							}
+							print "</tr>\n";
+						}
+						print "</table>\n";
+
+						//cerrar conexion
+						oci_free_statement($stid);
+						oci_close($conn);
+					?>
+				</div>
 			</div>
+			
 			
 	</body>
 

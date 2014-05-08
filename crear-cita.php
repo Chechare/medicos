@@ -153,12 +153,17 @@ if(login_check($conn)){
 
       <div class="row">
       <form action="crear-cita.php" method="get">
-        <h3>Doctor:
-          <label><strong>Médico:</strong></label>
-          <select name='dr' id='dr'>
+        <h3><div class="large-2 column left" style="padding:0.36rem 0.39rem 0.5rem 4.2rem">Médico:</div>
+			<div class="large-8 column left">
+          <select name='dr' id='dr' onchange='this.form.submit()'>
             <script>getMedicos()</script>
           </select>
-          <input type="submit"  value="Buscar" class="button" >
+		  </div>
+		  <div class="large-1 column left" >
+			<noscript>
+			<input type="submit"  value="Buscar" class="button" style="height:2.3rem;font-size: 1.2rem; padding:0.36rem 0.39rem 0.5rem 0.39rem;">
+			<noscript>
+		  </div>
           </h3>
           
         </form>

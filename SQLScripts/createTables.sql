@@ -53,3 +53,11 @@ REFERENCES Doctor(DrId)
 );
 
 CREATE VIEW patient_data AS SELECT pfname,plname nombre,phone,email FROM Patient;
+
+CREATE VIEW app_data AS
+SELECT
+drid,pid,dfname,dlname,pfname,plname,description,
+to_char(app_date, 'yyyy-mm-dd HH24:MI:SS')AS app_start, 
+to_char(app_date + NUMTODSINTERVAL(to_number(to_char(app_lenght, 'HH24')), 'hour') + NUMTODSINTERVAL(to_number(to_char(app_lenght, 'MI')), 'minute'), 'yyyy-mm-dd HH24:MI:SS') as app_end,
+to_char(app_lenght, 'HH24:MI') AS app_lenght, approved AS status
+FROM doctor NATURAL JOIN patient NATURAL JOIN appointment;
