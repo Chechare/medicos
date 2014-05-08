@@ -1,9 +1,9 @@
 <?php
-//include "connect.php";
-//include "driver.php";
-//sec_session_start();
+include "connect.php";
+include "driver.php";
+sec_session_start();
 
-//if(login_check($conn)){
+if(login_check($conn)){
 ?>
 	<!doctype html>
 	<html class="no-js" lang="en">
@@ -239,9 +239,9 @@
 	</html>
 
 <?php
-	//}else{		
-   	 //	$url="http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-   		//$_SESSION['url'] =$url;
-   		//header('Location: ./login.php?err=2');
-	//}
+	}else{		
+   		$url="http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+   		$_SESSION['url'] =$url;
+   		header('Location: ./login.php?err=2');
+	}
 ?>
