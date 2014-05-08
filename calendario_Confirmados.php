@@ -23,6 +23,7 @@ if(login_check($conn)){
 		$(document).ready(function() {
 			
 			$('#calendar').fullCalendar({
+				defaultView:'agendaWeek',
 				editable: true,
 				header: {
 	            left: 'prev,next today',
@@ -90,6 +91,8 @@ if(login_check($conn)){
 	</head>
 	<body>
 		<div class="row">
+
+					<h1>Citas Confirmadas<h2>
 			<form action="calendario_Confirmados.php" method="get">
 				<h3><div class="large-2 column left" style="padding:0.36rem 0.39rem 0.5rem 2.2rem">Médico:</div>
 					<div class="large-8 column left">
@@ -144,18 +147,18 @@ if(login_check($conn)){
 					</h3>					
 				</form>
 		</div>
-			<div class="large-7 column">
+			
+			<div class="large-12 column">
 				<div id='calendar' style="width:90%" ></div>
 			</div>
-			<div  class="large-5 column " >
-				<h1>Citas Confirmadas<h2>
+			<div  class="large-12 column " >
 				<div class="large-12 column vscrollbar" align="center" style="height:30%;" >
 					<?php
 						include "connect.php";
 
 						// Prepare the statement
 						//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-						$stid = oci_parse($conn, 'SELECT * FROM doctor_data ORDER BY drid');
+						$stid = oci_parse($conn, "SELECT pfName||' '||plname AS paciente, dfname||' '||dlname AS doctor, description, app_start,app_lenght FROM app_data WHERE status='A' AND to_date(app_start,'YYYY-MM-DD HH24:MI:SS')>SYSDATE ORDER BY app_start");
 						if (!$stid) {
 							$e = oci_error($conn);
 							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
@@ -172,7 +175,7 @@ if(login_check($conn)){
 						// Fetch the results of the query
 						//Toma los datos, revisa y mientras alla una fila crea una para la tabla. El foreach recorre las columnas que regresa el resultado
 						print "<table class='responsive' >\n";
-						echo "<tr>\n <th>ID</th>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Especialidad</th>\n <th>Duracion de Cita</th>\n </tr>\n";
+						echo "<tr>\n <th>Paciente</th>\n <th>Doctor</th>\n <th>Motivo</th>\n <th>Inicia</th>\n <th>Duracion de Cita</th>\n </tr>\n";
 
 						while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
 							print "<tr>\n";
