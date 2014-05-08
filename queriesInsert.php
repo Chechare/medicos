@@ -178,9 +178,9 @@ if(isset($_POST['scheduleInsert'])){
 
 				oci_commit($conn);
 				oci_free_statement($objParse2); 
-				}
 				oci_close($conn);
 				header('Location:crear-cita.php?alert=true'); 
+				}
 			else{
 				oci_close($conn);
 				header('Location:crear-cita.php?alert2=true');  
