@@ -22,7 +22,7 @@ if(login_check($conn)){
 
       <script src='./calendar/lib/jquery-ui.custom.min.js'></script>
       <script src='./calendar/fullcalendar.min.js'></script>
-  	  <script type="text/javascript" src="./js/jquery.qtip-1.0.0-rc3.min.js"></script> 
+      <script type="text/javascript" src="./js/jquery.qtip-1.0.0-rc3.min.js"></script> 
       
       <script>
         var startDate, endDate;
@@ -36,6 +36,9 @@ if(login_check($conn)){
         }
 
         $(document).ready(function() {
+
+          $('#registrado').addClass("ocultar");
+
           var calendar = $('#calendar').fullCalendar({
             defaultView:'agendaWeek',
             header: {
@@ -113,6 +116,23 @@ if(login_check($conn)){
           return lenght(drid);
        }
 
+       function changeDiv(){
+
+          if($('#registrado').hasClass("ocultar")){
+            $('#registro').addClass("ocultar");
+            $('#registrado').removeClass("ocultar");
+            $('#registrado').addClass("visible");                 
+          }
+          else{
+            if($('#registrado').hasClass("visible")){
+              $('#registrado').addClass("ocultar");
+              $('#registro').removeClass("ocultar");
+              $('#registro').addClass("visible"); 
+            }    
+         }
+
+        }
+
        function getMedicos(){
        <?php
             //iniciar la conexión
@@ -151,24 +171,23 @@ if(login_check($conn)){
     </head>
     <body style="background-color:white">
 
-      <div class="row">
+     <div class="row">
       <form action="crear-cita.php" method="get">
         <h3><div class="large-2 column left" style="padding:0.36rem 0.39rem 0.5rem 4.2rem">Médico:</div>
-			<div class="large-8 column left">
+      <div class="large-8 column left">
           <select name='dr' id='dr' onchange='this.form.submit()'>
             <script>getMedicos()</script>
           </select>
-		  </div>
-		  <div class="large-1 column left" >
-			<noscript>
-			<input type="submit"  value="Buscar" class="button" style="height:2.3rem;font-size: 1.2rem; padding:0.36rem 0.39rem 0.5rem 0.39rem;">
-			</noscript>
-		  </div>
+      </div>
+      <div class="large-1 column left" >
+      <noscript>
+      <input type="submit"  value="Buscar" class="button" style="height:2.3rem;font-size: 1.2rem; padding:0.36rem 0.39rem 0.5rem 0.39rem;">
+      </noscript>
+      </div>
           </h3>
           
         </form>
       </div>
-
       <!-- Calendario -->
       <div class="large-12 column">                          
         <div id='calendar' style="width:60%" ></div>
@@ -178,22 +197,24 @@ if(login_check($conn)){
       
       <div id="firstModal" class="reveal-modal close" data-reveal="" style="visibility: invisible; display: block; opacity: 1; " align="left">
         <div class="row vscrollbar" style="height:40%" id="datosUsuario">
-        <form action="queriesInsert.php" method="post" >
-          
-        <fieldset>
-        <legend><h4>Nueva Cita</h4></legend>     
-       
-                <div class="large-8 column" >
-                    <label><strong>¿Primera Visita?</strong> </label>
-                    <input type="radio" name="visita" value="si" checked><label>Si</label>
-                    <input type="radio" name="visita" value="no"><label>No</label>
-                </div>
+
+          <fieldset>
+            <div class="large-8 column" >
+              <label><strong>¿Primera Visita?</strong> </label>
+              <input type="radio" name="visita" value="si" onClick="changeDiv()"><label>Si</label>
+              <input type="radio" name="visita" value="no" onClick="changeDiv()"><label>No</label>
+            </div>
+
+            <legend><h4>Nueva Cita</h4></legend>     
+
+            <div id='registro'>
+              <form action="queriesInsert.php" method="post" >
 
                 <div class="large-4 column" >
-                    <label><strong>Medico</strong> </label>
-                    <text id="dr" name="dr"><script>document.write(document.getElementById("dr").value)</script></text>
+                  <label><strong>Medico</strong> </label>
+                  <text id="dr" name="dr"><script>document.write(document.getElementById("dr").value)</script></text>
                 </div>
-                           
+
                 <div class="large-6 column">
                   <label>Nombre(s)</label>
                   <input type="text" name="fname"> </input>
@@ -202,8 +223,8 @@ if(login_check($conn)){
                   <label>Apellido(s)</label>
                   <input type="text" name="lname"> </input>
                 </div>
-                
-                 <div class="large-6 column">
+
+                <div class="large-6 column">
                   <label>Teléfono</label>
                   <input type="text" name="tel"> </input>
                 </div>
@@ -213,50 +234,71 @@ if(login_check($conn)){
                 </div>
 
                 <div class="large-12 column">
-                    <label><strong>Detalles:</strong> </label>
-                    <textarea rows="4" cols="50" name="details" placeholder="Información útil que pueda servir para un dianóstico previo para el médico."></textarea>
+                  <label><strong>Detalles:</strong> </label>
+                  <textarea rows="4" cols="50" name="details" placeholder="Información útil que pueda servir para un dianóstico previo para el médico."></textarea>
                 </div>
                 <div class="row">
                   <legend><h4>Información de Cita:</h4></legend></p>
-                <div class="large-6 column">
-                  <legend><strong>Inicio </strong></legend>
-                  Hora: <text id="horaInicio" name="horaInicio"> </text></br>
-                  Fecha: <text id="fechaInicio" name="fechaInicio"> </text>
-                </div>
-                <div class="large-6 column">
-                  <legend><strong>Fin </strong></legend>
-                  Hora: <text id="horaFin" name="horaFin"> </text></br>
-                  Fecha: <text id="fechaFin" name="fechaFin"> </text>
-                </div>                  
-                </div>
-       
-        </fieldset>
+                  <div class="large-6 column">
+                    <legend><strong>Inicio </strong></legend>
+                    Hora: <text id="horaInicio" name="horaInicio"> </text></br>
+                    Fecha: <text id="fechaInicio" name="fechaInicio"> </text>
+                  </div>
+                  <div class="large-6 column">
+                    <legend><strong>Fin </strong></legend>
+                    Hora: <text id="horaFin" name="horaFin"> </text></br>
+                    Fecha: <text id="fechaFin" name="fechaFin"> </text>
+                  </div>   
+                  <input type="submit" name="crearCita" value="Agregar" class="button" >
+                  <input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
+                </form>
+              </div> 
+            </div>
 
-          <input type="submit" name="crearCita" value="Agregar" class="button" >
-          <input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
-          </form>
-           </div>
+              <div id="registrado">
+              <form action="queriesInsert.php" method="post" >
+                 <div class="large-4 column" >
+                  <label><strong>Medico</strong> </label>
+                  <text id="dr" name="dr"><script>document.write(document.getElementById("dr").value)</script></text>
+                </div>
+
+                <div class="large-6 column">
+                  <label>Teléfono</label>
+                  <input type="text" name="tel"> </input>
+                </div>
+                <div class="large-6 column">
+                  <label>Correo Eléctronico</label>
+                  <input type="text" name="email"> </input>
+                </div>
+
+                <div class="large-12 column">
+                  <label><strong>Detalles:</strong> </label>
+                  <textarea rows="4" cols="50" name="details" placeholder="Información útil que pueda servir para un dianóstico previo para el médico."></textarea>
+                </div>
+                <div class="row">
+                  <legend><h4>Información de Cita:</h4></legend></p>
+                  <div class="large-6 column">
+                    <legend><strong>Inicio </strong></legend>
+                    Hora: <text id="horaInicio" name="horaInicio"> </text></br>
+                    Fecha: <text id="fechaInicio" name="fechaInicio"> </text>
+                  </div>
+                  <div class="large-6 column">
+                    <legend><strong>Fin </strong></legend>
+                    Hora: <text id="horaFin" name="horaFin"> </text></br>
+                    Fecha: <text id="fechaFin" name="fechaFin"> </text>
+                  </div>   
+                  <input type="submit" name="crearCita" value="Agregar" class="button" >
+                  <input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
+                </form>
+              </div> 
+
+
+            </fieldset>
+
+
+          </div>
+        </div>
       </div>
-      
-         
-
-
-         <!-- <h4>Nueva Cita</h4>
-          <p ><b id="demo"></b><p>
-          <p>Inicio: <b id="horaInicio"></b></p>
-          <p>Final: <b id="end"></b></p>
-          <p>Duración: <b id="allday"></b></p>
-
-         
-          <form>
-  			Cita: <input type="text" id="cita">
-  			<input type="button" value="Crear Cita" class="button" onclick="createAppoiment()">
-        <input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
-
-  		</form>
-      </div>-->
-
-      
       
       <script>
         $(document).foundation();
