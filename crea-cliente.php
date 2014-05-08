@@ -1,7 +1,5 @@
 <?php
-include "driver.php";
 include "connect.php";
-sec_session_start();
 
 $alert = isset($_GET["alert"]) ? $_GET["alert"] : 0;
 $alert2 = isset($_GET["alert2"]) ? $_GET["alert2"] : 0;
@@ -12,8 +10,6 @@ if($alert){
 if($alert2){
   echo "<script>alert('¡Error! El Paciente puede no estar registrado');</script>";
 }
-
-if(login_check($conn)){
 
 ?>
   <!doctype html>
@@ -426,12 +422,3 @@ if(login_check($conn)){
       </script>
     </body>
   </html>
-
-<?php
-  }else{
-    $url="http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-    $_SESSION['url'] =$url;
-    header('Location: ./login.php?err=2');
-  }
-
-?>
