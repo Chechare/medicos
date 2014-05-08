@@ -45,6 +45,14 @@ table{
 
 
 
+.ocultar{
+  display: none;
+}
+
+.visible >div{
+  display: block;
+}
+
 /*Foundation CSS */
 
 
