@@ -54,6 +54,10 @@ REFERENCES Doctor(DrId)
 
 CREATE VIEW patient_data AS SELECT pid,pfname,plname,phone,email FROM Patient;
 
+CREATE VIEW doctor_data AS
+Select drid,dfname,dlname,specialty, to_char(app_lenght, 'HH24:MI')as lenght
+FROM doctor;
+
 CREATE VIEW app_data AS
 SELECT
 drid,pid,dfname,dlname,pfname,plname,description,
