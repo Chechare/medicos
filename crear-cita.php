@@ -309,7 +309,7 @@ if(login_check($conn)){
           <fieldset>
             <div class="large-8 column" >
               <label><strong>¿Primera Visita?</strong> </label>
-              <input type="radio" name="visita" value="si" onClick="changeDiv()"><label>Si</label>
+              <input type="radio" name="visita" value="si" onClick="changeDiv()" checked><label>Si</label>
               <input type="radio" name="visita" value="no" onClick="changeDiv()"><label>No</label>
             </div>
 
