@@ -3,7 +3,7 @@ include "connect.php";
 include "driver.php";
 sec_session_start();
 
-if(login_check($conn)){
+if(login_check($mysqli)){
 ?>
 	<!doctype html>
 	<html class="no-js" lang="en">

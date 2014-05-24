@@ -7,7 +7,7 @@ if($alert){
 	echo "<script>alert('¡Médico Agregado!');</script>";
 }
 
-if(login_check($conn)){
+if(login_check($mysqli)){
 ?>
 	<!doctype html>
 	<html class="no-js" lang="en">

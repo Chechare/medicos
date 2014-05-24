@@ -1,17 +1,15 @@
 <?php
+define("HOST","localhost"); //Direccción del servidor
+define("USER","root"); //Usuario para conectarse a la base de datos.
+define("PASSWORD","rosc940127"); //Contraseña para conectarse a la base de datos.
+define("DB","medicos"); //Nombre de la base de datos.
 
-$MYDB="(DESCRIPTION =
-   		(ADDRESS = (PROTOCOL = TCP)(HOST = info.gda.itesm.mx)(PORT = 1521))
-   		(CONNECT_DATA =
-     	(SID = ALUM)
-    	(SERVER = DEDICATED)
-   		)
-	 )";
+$mysqli = new mysqli(HOST, USER, PASSWORD, DB);
 
-$conn= oci_connect("a01226103", "14db103", $MYDB);
-		if (!$conn) {
-		    $e = oci_error();
-		    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-		}
+if (mysqli_connect_errno()) {
+	$err=  mysqli_connect_error();
+    echo "<meta charset='utf-8' /><html><b>Falló la conexión: </b>".$err." <html>";
+    exit();
+}
 
 ?>

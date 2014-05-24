@@ -6,14 +6,15 @@ sec_session_start(); //Nuestra manera personalizada segura de iniciar sesión ph
 if(isset($_POST['user'], $_POST['password'])) {
    $user = $_POST['user'];
    $password = $_POST['password']; //La contraseña con hash
-   if(login($user, $password, $conn)){
+   if(login($user, $password, $mysqli)){
         //Inicio de sesión exitosa
       if(!empty($_SESSION['url'])){
         $url = $_SESSION['url'];
       }else{
         $url = 'admin.php';
       }
-      header('Location:'.$url);   
+	  
+      header('Location:'.$url);
     } else {
       header('Location: login.php?err=1');  
         //Inicio de sesión fallida

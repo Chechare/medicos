@@ -23,6 +23,7 @@ CONSTRAINT datos_P CHECK(phone IS NOT NULL OR email IS NOT NULL)
 
 CREATE TABLE admin
 (
+ID number(10) NOT NULL,
 username varchar(10),
 password varchar(20) NOT NULL,
 CONSTRAINT pk_usernameID PRIMARY KEY (username)

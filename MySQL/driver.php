@@ -12,72 +12,58 @@ function sec_session_start() {
                         session_regenerate_id(true); //Regenera la sesión, borra la previa.                 
 }
 
-function login($user, $password, $conn) {
+function login($user, $password, $mysqli) {
    	//Uso de sentencias preparadas significa que la inyección de SQL no es posible.
-	$query = oci_parse($conn, "SELECT password, id FROM admin WHERE username=:name");
-	oci_bind_by_name($query,":name",$user);
+	$stmt = $mysqli->prepare("SELECT id, password FROM admin WHERE username=?");
+	$stmt->bind_param('s',$user);
+	$stmt->execute();
+	$stmt->store_result();
+	
+	$stmt->bind_result($user_id, $dbPass);
+    $stmt->fetch();
+	 
+    if ($stmt->num_rows == 1) {		
+		$stmt->close(); 			
+		if($dbPass == $password) { //Revisa si la contraseña en la base de datos coincide con la contraseña que el usuario envió.
+			//¡La contraseña es correcta!
+			$user_browser = $_SERVER['HTTP_USER_AGENT']; //Obtén el agente de usuario del usuario
+			$user_id = preg_replace("/[^0-9]+/", "", $user_id); //protección XSS ya que podemos imprimir este valor
+			$_SESSION['user_id'] = $user_id;
+			$username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $user); //protección XSS ya que podemos imprimir este valor
+			$_SESSION['username'] = $username;
+			$_SESSION['login_string'] = hash('sha512',$dbPass.$user_browser);
 
-	$r = oci_execute($query);
-	if (!$r) {
-	    $e = oci_error($query);
-	    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+			return true;  //Inicio de sesión exitosa
+		}else {
+			$stmt->close(); 
+			return false; //La conexión no es correcta    
+		}
 	}
-
-	$row = oci_fetch_array($query);	
-	$user_id=$row[1];
-	$dbPass=$row[0];
-
-
-	oci_close($conn);
-            
-    if($dbPass == $password) { //Revisa si la contraseña en la base de datos coincide con la contraseña que el usuario envió.
-		//¡La contraseña es correcta!
-        $user_browser = $_SERVER['HTTP_USER_AGENT']; //Obtén el agente de usuario del usuario
-        $user_id = preg_replace("/[^0-9]+/", "", $user_id); //protección XSS ya que podemos imprimir este valor
-        $_SESSION['user_id'] = $user_id;
-        $username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $user); //protección XSS ya que podemos imprimir este valor
-        $_SESSION['username'] = $username;
-        $_SESSION['login_string'] = hash('sha512',$dbPass.$user_browser);
-		echo $_SESSION['username'];
-		return true;  //Inicio de sesión exitosa
-    }else {
-		return false; //La conexión no es correcta    
-    }
+	else{
+		$stmt->close(); 
+		return false; //El usuario no existe.
+	}
 }
 
-function login_check($conn) {
+function login_check($mysqli) {
 	   //Revisa si todas las variables de sesión están configuradas.
-
 	if(isset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['login_string'])) {
-
 		$user_id = $_SESSION['user_id'];
 		$login_string = $_SESSION['login_string'];
 		$username = $_SESSION['username'];
 		$user_browser = $_SERVER['HTTP_USER_AGENT']; //Obtén la cadena de caractéres del agente de usuario
 
-		$query = oci_parse($conn, "SELECT password, id FROM admin WHERE username=:name");
-		oci_bind_by_name($query,":name",$username);
-
-		$r = oci_execute($query);
-		if (!$r) {
-		    $e = oci_error($query);
-		    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-		}
-
-		$row = oci_fetch_array($query);	
-		$user_id=$row[1];
-		$pass=$row[0];
-
-		oci_close($conn);
-
+		$stmt = $mysqli->prepare("SELECT id, password FROM admin WHERE username=?");
+		$stmt->bind_param('s',$username);
+		$stmt->execute();
+		$stmt->store_result();
+		
+		$stmt->bind_result($user_id, $pass);
+		$stmt->fetch();
+		
 		$login_check = hash('sha512',$pass.$user_browser);
-
-		/*echo "<p></p>";
-		echo "Generada por la sesion: ".$login_string;
-		echo "<p></p>";
-		echo "Generada para checar: ".$login_check;*/
-
-
+		$stmt->close(); 			
+		
 		if($login_check == $login_string) {			
 			return true; //¡¡¡¡Conectado!!!!
 		} else {
@@ -85,7 +71,7 @@ function login_check($conn) {
 		}
 	} else {
 		return false; //No conectado
-	}
+	} 
 }
 
 ?>

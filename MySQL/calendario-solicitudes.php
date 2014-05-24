@@ -2,7 +2,7 @@
 include "driver.php";
 include "connect.php";
 sec_session_start();
-if(login_check($conn)==true){
+if(login_check($mysqli)==true){
 ?>
 	<!DOCTYPE html>
 	<html>

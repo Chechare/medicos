@@ -24,7 +24,7 @@ if($alert4){
   echo "<script>alert('¡Error! Usario no agregado');</script>";
 }
 
-if(login_check($conn)){
+if(login_check($mysqli)){
 
 ?>
   <!doctype html>

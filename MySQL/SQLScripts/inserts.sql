@@ -23,14 +23,6 @@ VALUES ('P003','Maria de la Concepcion','Pureza de la Hoya','33345612','maryconc
 INSERT INTO PATIENT
 VALUES ('P004','Esteban Julio Ricardo','Montoya de la Rosa Ramirez','33234561','esteban34@gmail.com');
 
-/*-------ADMINS---------*/
-
-INSERT INTO ADMIN
-VALUES('secre1','contra1');
-
-INSERT INTO ADMIN
-VALUES('petra','abc123');
-
 /*-------SCHEDULES---------*/
 
 INSERT INTO SCHEDULE VALUES('domingo','D01',TIME('10:00'),TIME('17:00'));
@@ -70,7 +62,7 @@ VALUES('P004','D02',TIME('2014-6-6 16:30'),'tengo calentura y vomito desde hace 
 
 /*------Admin------*/
 INSERT INTO ADMIN
-VALUES("Chechare","123456");
+VALUES(6,"Chechare","123456");
 
 INSERT INTO ADMIN
-VALUES("YoabP","qwerty");
+VALUES(2,"YoabP","qwerty");
