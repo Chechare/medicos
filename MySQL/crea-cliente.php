@@ -276,7 +276,7 @@ if($alert2){
     </head>
     <body style="background-color:white">
      <div class="row">
-      <form action="crear-cita.php" method="get">
+      <form action="crear-cliente.php" method="get">
         <h3><div class="large-2 column left" style="padding:0.36rem 0.39rem 0.5rem 4.2rem">Médico:</div>
       <div class="large-8 column left">
           <select name='dr' onChange='this.form.submit()'>
