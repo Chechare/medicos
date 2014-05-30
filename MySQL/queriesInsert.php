@@ -340,25 +340,24 @@ if(isset($_POST['scheduleInsert'])){
 							
 		}
 			if(isset($_POST['aprobarCita'])){
-			$stid = oci_parse($conn, "UPDATE appointment SET approved='A' WHERE pid=:myid AND drid=:mydr AND app_date=to_date(:mydate,'YYYY-MM-DD HH24:MI:SS')");
-						oci_bind_by_name($stid, ":myid", $_POST['pid']);
-						oci_bind_by_name($stid, ":mydr", $_POST['drid']);
-						oci_bind_by_name($stid, ":mydate", $_POST['app_date']);
+				$stmt= $mysqli->prepare("UPDATE appointment SET approved='A' WHERE pid=? AND drid=? AND app_datetime=? ");
+				$stmt->bind_param('sss', $_POST['pid'], $_POST['drid'], $_POST['app_date']);
+				$stmt->execute();
 
-						if (!$stid) {
-							$e = oci_error($conn);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-						}
-
-						$r = oci_execute($stid);
-						if (!$r) {
-							$e = oci_error($stid);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-						}
-						oci_commit($conn);
-						oci_free_statement($stid);
-						oci_close($conn);
-						header('Location:calendario-solicitudes.php#');  
-							
+				if (($stmt->affected_rows) > 0){
+					$stmt->close();
+					$mysqli->close();
+					echo "<script> 
+						alert('Cita aprobada!');
+						window.location = 'calendario-solicitudes.php';
+						 </script>";	
+				}else{
+					$stmt->close();
+					$mysqli->close();					
+					echo "<script> 
+						alert('Error al aprobar la cita. Inténtelo de nuevo.');						
+						window.location = 'calendario-solicitudes.php';
+						</script>";
+				}							
 		}
 ?>

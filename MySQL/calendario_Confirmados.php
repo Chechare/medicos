@@ -138,13 +138,9 @@ if(login_check($mysqli)){
 
 						$row->bind_result($pfname, $plname, $dfname, $dlname, $desc, $start, $lenght);
 						
-						if(($row->num_rows)>0){
-
-
-							
+						if(($row->num_rows)>0){	
 							echo "<table class='responsive' >\n";
 							echo "<tr>\n <th>Paciente</th>\n <th>Doctor</th>\n <th>Motivo</th>\n <th>Inicia</th>\n <th>Duracion de Cita</th>\n </tr>\n";
-
 							while ($row -> fetch()) {
 								echo "<tr>\n";
 									echo "<td>".$pfname." ".$plname."</td> <td>".$dfname." ".$dlname."</td> <td >".$desc."</td> <td>".$start."</td> <td>".$lenght."</td>\n";
@@ -155,6 +151,9 @@ if(login_check($mysqli)){
 						else{
 							echo "<meta charset='utf-8' /> <script> alert('No hay citas próximas para éste médico') </script>";
 						}
+
+						$row->close();
+						$mysqli->close();
 					?>
 				</div>
 			</div>

@@ -24,50 +24,43 @@ if(login_check($mysqli)==true){
 		<div class="large-12 column vscrollbar" align="center" style="height:60%;"  >
 			<?php
 				include "connect.php";
-
-				// Prepare the statement
-				//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-				$stid = oci_parse($conn, "SELECT pid,drid,dfname,dlname,pfname,plname,description,app_start app_st, to_char(to_date(app_start,'YYYY-MM-DD HH24:MI:SS'),'DD/MON/YYYY') as app_date, to_char(to_date(app_start,'YYYY-MM-DD HH24:MI:SS'),'HH24:MI') as app_hour, to_date(app_start,'YYYY-MM-DD HH24:MI:SS') as app_fecha FROM app_data WHERE status='P' ORDER BY app_fecha");
-				if (!$stid) {
-				    $e = oci_error($conn);
-				    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+				//El querie tal como lo usarias en el DBM.
+				if(!$resultado= $mysqli -> query("SELECT drid,pid,dfname,dlname,pfname,plname,description,app_start,date(app_start) as app_date, time(app_start) as app_hour FROM app_data WHERE status='P' ORDER BY app_date")){
+					print $mysqli->error;
 				}
+				
+				if(($resultado->num_rows) > 0){
+					//Toma los datos, revisa y mientras alla una fila crea una para la tabla.
+					print "<table class='responsive' >\n";
+					echo "<tr>\n <th>Doctor</th>\n <th>Paciente</th>\n <th>Fecha</th>\n <th>Hora</th>\n <th>Descripción</th>\n <th></th>\n </tr>\n";
 
-				// Perform the logic of the query
-				// Ejecuta el querie
-				$r = oci_execute($stid);
-				if (!$r) {
-				    $e = oci_error($stid);
-				    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+					while ($row=$resultado->fetch_assoc()) {
+					    print "<tr>\n";
+						print "	   <td>".$row['dfname']." ".$row['dlname']."</td>\n";
+						print "	   <td>".$row['pfname']." ".$row['plname']."</td>\n";
+						print "	   <td>".$row['app_date']."</td>\n";
+						print "	   <td>".$row['app_hour']."</td>\n";
+						print "	   <td>".$row['description']."</td>\n";
+						
+						print "	   <td><form action='queriesInsert.php' method='post'>
+						<input type='hidden' name='pid' value='".$row['pid']."'/>
+						<input type='hidden' name='drid' value='".$row['drid']."'/>
+						<input type='hidden' name='app_date' value='".$row['app_start']."'/>
+						<input type='submit' name='aprobarCita' value='Aprobar' class='button' style='height:2.3rem;font-size: 1.2rem; padding:0.2rem 0.1rem 0.1rem 0.2rem;' >
+						</form></td>\n";
+					    print "</tr>\n";
+					    print "</tr>\n";
+					}
+					print "</table>\n";
+				}else{
+					echo 
+				"	<div class='panel callout radius'>
+				  		<h5>¡No hay más citas!</h5>
+				  		<p>Se han aprobado o rechazado todas las citas pendientes, regrese más tarde para comprobar nuevas citas.</p>
+					</div>";
 				}
-
-				// Fetch the results of the query 
-				//Toma los datos, revisa y mientras alla una fila crea una para la tabla. El foreach recorre las columnas que regresa el resultado
-				print "<table class='responsive' >\n";
-				echo "<tr>\n <th>Doctor</th>\n <th>Paciente</th>\n <th>Fecha</th>\n <th>Hora</th>\n <th>Descripción</th>\n <th></th>\n </tr>\n";
-
-				while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
-				    print "<tr>\n";
-					print "	   <td>".$row['DFNAME']." ".$row['DLNAME']."</td>\n";
-					print "	   <td>".$row['PFNAME']." ".$row['PLNAME']."</td>\n";
-					print "	   <td>".$row['APP_DATE']."</td>\n";
-					print "	   <td>".$row['APP_HOUR']."</td>\n";
-					print "	   <td>".$row['DESCRIPTION']."</td>\n";
-					
-					print "	   <td><form action='queriesInsert.php' method='post'>
-					<input type='hidden' name='pid' value='".$row['PID']."'/>
-					<input type='hidden' name='drid' value='".$row['DRID']."'/>
-					<input type='hidden' name='app_date' value='".$row['APP_ST']."'/>
-					<input type='submit' name='aprobarCita' value='Aprobar' class='button' style='height:2.3rem;font-size: 1.2rem; padding:0.2rem 0.1rem 0.1rem 0.2rem;' >
-					</form></td>\n";
-				    print "</tr>\n";
-				    print "</tr>\n";
-				}
-				print "</table>\n";
-
 				//cerrar conexion
-				oci_free_statement($stid);
-				oci_close($conn);
+				$mysqli->close();
 			?>
 		</div>
 

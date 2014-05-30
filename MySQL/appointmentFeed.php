@@ -5,14 +5,8 @@ include 'connect.php';
 // Prepare the statement
 $sentencia= $mysqli->prepare('SELECT * FROM app_data WHERE drid=? AND status=?');
 
-if($_POST!=NULL){
-	 $sentencia->bind_param('ss',$_POST["dr"], $_POST["status"]);
-}else{
-      $dr='D01';
-      $s='A';
-     $sentencia->bind_param('ss',$dr,$s);
+$sentencia->bind_param('ss',$_POST["dr"], $_POST["status"]);
 
-}
 
 // Ejecuta el querie
 
@@ -30,8 +24,8 @@ $jsonrow=array();
 while (($row=$resultado->fetch_assoc())!=Null) {
    $jsonrow[]=array(
             'title' => 'Ocupado',
-            'start' =>$row['app_start'].':00',
-            'end'   => $row['app_end'].':00',
+            'start' =>$row['app_start'],
+            'end'   => $row['app_end'],
             'description'=> utf8_encode($row['description']),
             'lenght'=> $row['app_lenght'],
             'dlname'=> utf8_encode($row['dlname']),
