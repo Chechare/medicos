@@ -1,6 +1,7 @@
 <?php
 include "driver.php";
 include 'connect.php';
+include 'functions.php';
 sec_session_start();
 if(login_check($mysqli)){
 	?>
@@ -38,11 +39,14 @@ if(login_check($mysqli)){
 						url: 'appointmentFeed.php', // use the `url` property
 						type: 'POST',
 						data: {
-							dr: <?php if(isset($_GET['dr'])){ echo "'".$_GET['dr']."'";} else echo "'D01'"; ?>,
+							dr: <?php if(isset($_GET['dr'])){
+								 		echo "'".$_GET['dr']."'";
+										} 
+										else echo "'D01'"; ?>,
 							status: 'A'
 						},
 						error: function() {
-							alert('error al cargar los eventos!');
+							alert('Error al cargar los eventos!');
 						},
 						color: 'teal',    // an option!
 						textColor: 'white',  // an option!
@@ -98,44 +102,7 @@ if(login_check($mysqli)){
 					<div class="large-8 column left">
 					<select name='dr' onchange='this.form.submit()'>
 					<?php
-						//iniciar la conexión
-						include "connect.php";
-
-						// Prepare the statement
-						//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-						$stid = oci_parse($conn, 'SELECT * FROM doctor_data ORDER BY drid');
-						if (!$stid) {
-							$e = oci_error($conn);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-						}
-
-						// Perform the logic of the query
-						// Ejecuta el querie
-						$r = oci_execute($stid);
-						if (!$r) {
-							$e = oci_error($stid);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-						}
-
-						// Fetch the results of the query
-						//Toma los datos, revisa y mientras alla una fila crea una opcion para el select
-						while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
-							if(isset($_GET['dr'])){
-								if($_GET['dr']==$row['DRID']){
-									echo "<option value='".$row['DRID']."' selected>".$row['DRID'].'-'.$row['DFNAME'].' '.$row['DLNAME'].'-'.$row['SPECIALTY'].'</option> /n';
-								}
-								else{
-									echo "<option value='".$row['DRID']."'>".$row['DRID'].'-'.$row['DFNAME'].' '.$row['DLNAME'].'-'.$row['SPECIALTY'].'</option> /n';
-								}
-							}
-							else{
-								echo "<option value='".$row['DRID']."'>".$row['DRID'].'-'.$row['DFNAME'].' '.$row['DLNAME'].'-'.$row['SPECIALTY'].'</option> /n';
-							}
-						}
-						//cerrar conexion
-						oci_free_statement($stid);
-						oci_close($conn);
-
+						getMedicos();
 					?>
 					</select>
 					</div>
@@ -154,41 +121,40 @@ if(login_check($mysqli)){
 			<div  class="large-12 column " >
 				<div class="large-12 column vscrollbar" align="center" style="height:30%;" >
 					<?php
-						include "connect.php";
+						$mysqli = new mysqli(HOST, USER, PASSWORD, DB);
 
-						// Prepare the statement
-						//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-						$stid = oci_parse($conn, "SELECT pfName||' '||plname AS paciente, dfname||' '||dlname AS doctor, description, app_start,app_lenght FROM app_data WHERE status='A' AND to_date(app_start,'YYYY-MM-DD HH24:MI:SS')>SYSDATE ORDER BY app_start");
-						if (!$stid) {
-							$e = oci_error($conn);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+						if(isset($_GET['dr'])){
+							$drID=$_GET['dr'];
+						}else{
+							$drID='D01';
 						}
 
-						// Perform the logic of the query
-						// Ejecuta el querie
-						$r = oci_execute($stid);
-						if (!$r) {
-							$e = oci_error($stid);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-						}
+						$row=$mysqli->prepare("SELECT pfname, plname, dfname, dlname, description, app_start, time_format(app_lenght,'%H:%i') 
+												FROM app_data WHERE status='A' AND app_start>NOW() AND drid='".$drID."' ORDER BY app_start");
+						
+						$row->execute();
 
-						// Fetch the results of the query
-						//Toma los datos, revisa y mientras alla una fila crea una para la tabla. El foreach recorre las columnas que regresa el resultado
-						print "<table class='responsive' >\n";
-						echo "<tr>\n <th>Paciente</th>\n <th>Doctor</th>\n <th>Motivo</th>\n <th>Inicia</th>\n <th>Duracion de Cita</th>\n </tr>\n";
+						$row->store_result();
 
-						while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
-							print "<tr>\n";
-							foreach ($row as $item) {
-								print "    <td  style='text-align: center'>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . "</td>\n";
+						$row->bind_result($pfname, $plname, $dfname, $dlname, $desc, $start, $lenght);
+						
+						if(($row->num_rows)>0){
+
+
+							
+							echo "<table class='responsive' >\n";
+							echo "<tr>\n <th>Paciente</th>\n <th>Doctor</th>\n <th>Motivo</th>\n <th>Inicia</th>\n <th>Duracion de Cita</th>\n </tr>\n";
+
+							while ($row -> fetch()) {
+								echo "<tr>\n";
+									echo "<td>".$pfname." ".$plname."</td> <td>".$dfname." ".$dlname."</td> <td >".$desc."</td> <td>".$start."</td> <td>".$lenght."</td>\n";
+								echo "</tr>\n";
 							}
-							print "</tr>\n";
+							echo "</table>\n";
 						}
-						print "</table>\n";
-
-						//cerrar conexion
-						oci_free_statement($stid);
-						oci_close($conn);
+						else{
+							echo "<meta charset='utf-8' /> <script> alert('No hay citas próximas para éste médico') </script>";
+						}
 					?>
 				</div>
 			</div>

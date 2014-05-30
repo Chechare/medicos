@@ -63,8 +63,8 @@ CREATE VIEW app_data AS
 SELECT
 drid,pid,dfname,dlname,pfname,plname,description,
 DATE_FORMAT(app_datetime, '%Y-%m-%d %H:%i')AS app_start, 
-DATE_FORMAT(TIMESTAMP(TIME(app_datetime),TIME(app_lenght)),'%H:%i') as app_end,
-DATE_FORMAT(app_lenght, '%Y-%m-%d %H:%i') AS app_lenght, approved AS status
+DATE_FORMAT(TIMESTAMP(app_datetime,TIME(app_lenght)),'%Y-%m-%d %H:%i') as app_end,
+DATE_FORMAT(app_lenght,'%H:%i') AS app_lenght, approved AS status
 FROM doctor NATURAL JOIN patient NATURAL JOIN appointment;
 
 CREATE VIEW hour_data AS

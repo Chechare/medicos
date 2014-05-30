@@ -1,61 +1,50 @@
 <?php
-// Create connection to Oracle
-//la coneccion obviamente
 
-$MYDB ="
-     (DESCRIPTION =
-       (ADDRESS = (PROTOCOL = TCP)(HOST = info.gda.itesm.mx)(PORT = 1521))
-       (CONNECT_DATA =
-         (SID = ALUM)
-         (SERVER = DEDICATED)
-       )
-     )";
-	
-$conn = oci_connect("a01226103", "14db103", $MYDB);
-if (!$conn) {
-    $e = oci_error();
-    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-}
+include 'connect.php';
 
 // Prepare the statement
-//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-$stid = oci_parse($conn, 'SELECT * FROM app_data WHERE drid=:myid AND status=:mystatus');
-if (!$stid) {
-    $e = oci_error($conn);
-    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-}
+$sentencia= $mysqli->prepare('SELECT * FROM app_data WHERE drid=? AND status=?');
+
 if($_POST!=NULL){
-	oci_bind_by_name($stid, ':myid', $_POST["dr"]);
-	oci_bind_by_name($stid, ':mystatus', $_POST["status"]);
+	 $sentencia->bind_param('ss',$_POST["dr"], $_POST["status"]);
+}else{
+      $dr='D01';
+      $s='A';
+     $sentencia->bind_param('ss',$dr,$s);
+
 }
-// Perform the logic of the query
+
 // Ejecuta el querie
-$r = oci_execute($stid);
-if (!$r) {
-    $e = oci_error($stid);
-    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+
+if (!$sentencia->execute()) {
+    echo "Falló la ejecución: (" . $sentencia->errno . ") " . $sentencia->error;
 }
+
+$resultado=$sentencia->get_result();
 
 // Fetch the results of the query
 //JSON formatting
 $jsonrow=array();
-while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
+
+
+while (($row=$resultado->fetch_assoc())!=Null) {
    $jsonrow[]=array(
-            'title' => "Ocupado",
-            'start' => $row['APP_START'],
-            'end'   => $row['APP_END'],
-            'description'=> $row['DESCRIPTION'],
-            'lenght'=> $row['APP_LENGHT'],
-            'dfname'=> $row['DFNAME'],
-            'dlname'=> $row['DLNAME'],
-            'pfname'=> $row['PFNAME'],
-            'plname'=> $row['PLNAME']
+            'title' => 'Ocupado',
+            'start' =>$row['app_start'].':00',
+            'end'   => $row['app_end'].':00',
+            'description'=> utf8_encode($row['description']),
+            'lenght'=> $row['app_lenght'],
+            'dlname'=> utf8_encode($row['dlname']),
+            'dfname'=> utf8_encode($row['dfname']),
+            'pfname'=> utf8_encode($row['pfname']),
+            'plname'=> utf8_encode($row['plname']),
    );
 }
+
 print json_encode($jsonrow);
 
 //cerrar conexion
-oci_free_statement($stid);
-oci_close($conn);
+$sentencia->close();
+$mysqli->close();
 
 ?>
