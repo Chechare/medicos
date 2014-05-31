@@ -3,7 +3,7 @@ include "connect.php";
 include "driver.php";
 sec_session_start();
 
-if(login_check($conn)){
+if(login_check($mysqli)){
 ?>
 	<!doctype html>
 	<html class="no-js" lang="en">
@@ -27,66 +27,56 @@ if(login_check($conn)){
 				include "connect.php";
 
 				// Prepare the statement
-				//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-				$stid = oci_parse($conn, 'SELECT * FROM patient_data ORDER BY pfname');
-				if (!$stid) {
-				    $e = oci_error($conn);
-				    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+				$stmt = $mysqli->query('SELECT * FROM patient_data ORDER BY pfname' );
+
+				if(($stmt->num_rows) > 0){
+					// Fetch the results of the query
+					print "<table class='responsive' >\n";
+					echo "<tr>\n <th>ID</th>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Télefono</th>\n <th>Correo Eléctronico</th>\n </tr>\n";
+	
+					while ($row= $stmt->fetch_assoc()) {
+					    print "<tr>\n";
+					    foreach ($row as $item) {
+					        print "    <td  style='text-align: center'>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . "</td>\n";
+					    }
+						print "	   <td><form action='paciente.php' method='post'>
+						<input type='hidden' name='pid' value='".$row['pid']."'/>
+						<input type='hidden' name='fname' value='".$row['pfname']."'/>
+						<input type='hidden' name='lname' value='".$row['plname']."'/>
+						<input type='hidden' name='phone' value='".$row['phone']."'/>
+						<input type='hidden' name='mail' value='".$row['email']."'/>
+						<input type='hidden' name='mod' value=true/>
+						<input type='submit' value='Modificar' class='button' style='height:2.3rem;font-size: 1.2rem; padding:0.2rem 0.1rem 0.1rem 0.2rem;' >
+						</form></td>\n";
+					    print "</tr>\n";
+					    print "</tr>\n";
+					}
+					print "</table>\n";
+				}else{
+					echo 
+				"	<div class='panel callout radius'>
+				  		<h5>¡No hay pacientes registrados!</h5>
+				  		<p>Registre pacientes para poder mostrarlos en esta vida. 
+				  		Una vez registrados usted podra modificar los datos del paciente si asi lo desea.</p>
+					</div>";
 				}
-
-				// Perform the logic of the query
-				// Ejecuta el querie
-				$r = oci_execute($stid);
-				if (!$r) {
-				    $e = oci_error($stid);
-				    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-				}
-
-				// Fetch the results of the query
-				//Toma los datos, revisa y mientras alla una fila crea una para la tabla. El foreach recorre las columnas que regresa el resultado
-				print "<table class='responsive' >\n";
-				echo "<tr>\n <th>ID</th>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Télefono</th>\n <th>Correo Eléctronico</th>\n </tr>\n";
-
-				while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
-				    print "<tr>\n";
-				    foreach ($row as $item) {
-				        print "    <td  style='text-align: center'>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;") . "</td>\n";
-				    }
-					print "	   <td><form action='paciente.php' method='post'>
-					<input type='hidden' name='pid' value='".$row['PID']."'/>
-					<input type='hidden' name='fname' value='".$row['PFNAME']."'/>
-					<input type='hidden' name='lname' value='".$row['PLNAME']."'/>
-					<input type='hidden' name='phone' value='".$row['PHONE']."'/>
-					<input type='hidden' name='mail' value='".$row['EMAIL']."'/>
-					<input type='hidden' name='mod' value=true/>
-					<input type='submit' value='Modificar' class='button' style='height:2.3rem;font-size: 1.2rem; padding:0.2rem 0.1rem 0.1rem 0.2rem;' >
-					</form></td>\n";
-				    print "</tr>\n";
-				    print "</tr>\n";
-				}
-				print "</table>\n";
-
 				//cerrar conexion
-				oci_free_statement($stid);
-				oci_close($conn);
+				$stmt->close();
+				$mysqli->close();
 			?>
 		</div>
 		<div class="large-12 column" style="height:20%;" align="center">
-	   		      <input type="button" value="Modificar" class="button" Style="background-color:GRAY">
+	   		<input type="button" value="Agregar Nuevo" class="button" Style="background-color:GRAY" onClick="openModal()">
 		</div>
 
-<?php if($_POST['mod']){ ?>
-		<div id="mod" class="reveal-modal open" data-reveal="" style="visibility: visible; display: block; opacity: 1 " align="left">
+<?php if(isset($_POST['mod'])){ ?>
+		<div id="mod" class="reveal-modal open" data-reveal=""  style="visibility: visible; display: block; opacity: 1 "  align="left">
 	        <fieldset>
 	        <legend><h4>Modificar Paciente</h4></legend>     	
 	     	<form action="queriesInsert.php" method="post">
-
-	     	<div class="row">
-	     	<div class="large-1 column">
-	        <label>ID</label>
-	        <input type="text" name="ID" value=<?php echo "'".$_POST['pid']."'" ?>> </input>
-	        </div>
-	        <div class="large-5 column">
+	     	<div class="row">	     	
+	     	<input type="hidden" name="ID" value=<?php echo "'".$_POST['pid']."'" ?>> </input>	     
+	        <div class="large-6 column">
 	        <label>Nombre(s)</label>
 	        <input type="text" name="fname" value=<?php echo "'".$_POST['fname']."'" ?>> </input>
 	    	</div>
@@ -94,11 +84,11 @@ if(login_check($conn)){
 	        <label>Apellido(s)</label>
 	        <input type="text" name="lname" value=<?php echo "'".$_POST['lname']."'" ?>> </input>
 	    	</div>
-	    	<div class="large-10 column">
+	    	<div class="large-4 column">
 	        <label>Teléfono</label>
 	        <input type="text" name="phone" value=<?php echo "'".$_POST['phone']."'" ?>> </input>
 	    	</div>
-	    	<div class="large-2 column">
+	    	<div class="large-8 column">
 			<label>E-Mail</label>
 	        <input type="text" name="mail" value=<?php echo "'".$_POST['mail']."'" ?>> </input>
 	    	</div>
@@ -111,18 +101,57 @@ if(login_check($conn)){
 			
 			</form>
 	    </div>
-		<?php } ?>
 	 
+	<?php } ?>
 
+	<div id="agregar" class="reveal-modal" data-reveal="" align="left">
+	        <fieldset>
+	        <legend><h4>Agregar Nuevo</h4></legend>     	
+	     	<form action="queriesInsert.php" method="post">
+
+	     	<div class="row">
+	     	<div class="large-1 column">
+	        <label>ID</label>
+	        <input type="text" name="ID" > </input>
+	        </div>
+	        <div class="large-5 column">
+	        <label>Nombre(s)</label>
+	        <input type="text" name="fname"> </input>
+	    	</div>
+	    	<div class="large-6 column">
+	        <label>Apellido(s)</label>
+	        <input type="text" name="lname"> </input>
+	    	</div>
+	    	<div class="large-4 column">
+	        <label>Teléfono</label>
+	        <input type="text" name="phone"> </input>
+	    	</div>
+	    	<div class="large-8 column">
+			<label>E-Mail</label>
+	        <input type="text" name="mail"> </input>
+	    	</div>
+	   		</div>
+
+	       </fieldset>
+	       
+			<input type="submit" name="agregarPaciente" value="Agregar" class="button" >
+			<input type="button" value="Cancelar" class="button" Style="background-color:GRAY" onclick="closeModal()">
+			
+			</form>
+	    </div>
 
 	</body>
-
 
 		<script>
 		 function closeModal(){ 
 	        $('#agregar').foundation('reveal', 'close'); //Cierra ventana emergente
 			$('#mod').foundation('reveal', 'close'); //Cierra ventana emergente
+			$('#mod').foundation('reveal', 'close');
+
 	      }	
+	      function openModal(){
+	      	$('#agregar').foundation('reveal', 'open');
+	      }
 		</script>
 
 

@@ -316,48 +316,70 @@ if(isset($_POST['scheduleInsert'])){
 						header('Location:medico.php');  
 							
 		}
-			if(isset($_POST['modPaciente'])){
-			$stid = oci_parse($conn, "UPDATE patient SET pfname=:myfname, plname=:mylname, phone=:myphone, email=:mymail WHERE pid=:myid");
-						oci_bind_by_name($stid, ":myfname", $_POST['fname']);
-						oci_bind_by_name($stid, ":mylname", $_POST['lname']);
-						oci_bind_by_name($stid, ":myphone", $_POST['phone']);
-						oci_bind_by_name($stid, ":mymail", $_POST['mail']);
-						oci_bind_by_name($stid, ":myid", $_POST['ID']);
-						if (!$stid) {
-							$e = oci_error($conn);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-						}
-
-						$r = oci_execute($stid);
-						if (!$r) {
-							$e = oci_error($stid);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-						}
-						oci_commit($conn);
-						oci_free_statement($stid);
-						oci_close($conn);
-						header('Location:paciente.php');  
-							
+		if(isset($_POST['modPaciente'])){
+			$stmt = $mysqli->prepare("UPDATE patient SET pfname=?, plname=?, phone=?, email=? WHERE pid=?");
+			$stmt->bind_param('ssiss', $_POST['fname'], $_POST['lname'], $_POST['phone'], $_POST['mail'], $_POST['ID']);
+			$stmt->execute();
+			if (($stmt->affected_rows) > 0){
+				$stmt->close();
+				$mysqli->close();
+				echo "<script> 
+					alert('¡Paciente modificado!');
+					window.location = 'paciente.php';
+					 </script>";	
+			}else{
+				$stmt->close();
+				$mysqli->close();					
+				echo "<script> 
+					alert('Error al modificar datos del paciente. Inténtelo de nuevo.');						
+					window.location = 'paciente.php';
+					</script>";
+			}							
 		}
-			if(isset($_POST['aprobarCita'])){
-				$stmt= $mysqli->prepare("UPDATE appointment SET approved='A' WHERE pid=? AND drid=? AND app_datetime=? ");
-				$stmt->bind_param('sss', $_POST['pid'], $_POST['drid'], $_POST['app_date']);
-				$stmt->execute();
+		if(isset($_POST['agregarPaciente'])){
+			$stmt = $mysqli->prepare("INSERT INTO patient VALUES(?,?,?,?,?)");
+			if(!$stmt->bind_param('sssis',$_POST['ID'], $_POST['fname'], $_POST['lname'], $_POST['phone'], $_POST['mail'])){
+				$err=$stmt->error;
+			}
+			if(!$stmt->execute()){
+				$err=$stmt->error;
+			}	
 
-				if (($stmt->affected_rows) > 0){
-					$stmt->close();
-					$mysqli->close();
-					echo "<script> 
-						alert('Cita aprobada!');
-						window.location = 'calendario-solicitudes.php';
-						 </script>";	
-				}else{
-					$stmt->close();
-					$mysqli->close();					
-					echo "<script> 
-						alert('Error al aprobar la cita. Inténtelo de nuevo.');						
-						window.location = 'calendario-solicitudes.php';
-						</script>";
-				}							
+			if (($stmt->affected_rows) > 0){
+				$stmt->close();
+				$mysqli->close();
+				echo "<script> 
+					alert('¡Paciente agregado!');
+					window.location = 'paciente.php';
+					 </script>";	
+			}else{
+				$stmt->close();
+				$mysqli->close();					
+				echo "<script> 
+					alert('Error al agregar el nuevo paciente. Inténtelo de nuevo.');						
+					window.location = 'paciente.php';
+					</script>";
+			}							
 		}
+		if(isset($_POST['aprobarCita'])){
+			$stmt= $mysqli->prepare("UPDATE appointment SET approved='A' WHERE pid=? AND drid=? AND app_datetime=? ");
+			$stmt->bind_param('sss', $_POST['pid'], $_POST['drid'], $_POST['app_date']);
+			$stmt->execute();
+
+			if (($stmt->affected_rows) > 0){
+				$stmt->close();
+				$mysqli->close();
+				echo "<script> 
+					alert('Cita aprobada!');
+					window.location = 'calendario-solicitudes.php';
+					 </script>";	
+			}else{
+				$stmt->close();
+				$mysqli->close();					
+				echo "<script> 
+					alert('Error al aprobar la cita. Inténtelo de nuevo.');						
+					window.location = 'calendario-solicitudes.php';
+					</script>";
+			}							
+	}
 ?>
