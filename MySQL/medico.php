@@ -30,48 +30,40 @@ if(login_check($mysqli)){
 			<?php
 				include "connect.php";
 
-				// Prepare the statement
-				//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-				$stid = oci_parse($conn, 'SELECT * FROM doctor_data ORDER BY drid');
-				if (!$stid) {
-				    $e = oci_error($conn);
-				    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-				}
+				$stmt = $mysqli->query('SELECT * FROM doctor_data ORDER BY drid');
 
-				// Perform the logic of the query
-				// Ejecuta el querie
-				$r = oci_execute($stid);
-				if (!$r) {
-				    $e = oci_error($stid);
-				    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-				}
-
-				// Fetch the results of the query
-				//Toma los datos, revisa y mientras alla una fila crea una para la tabla. El foreach recorre las columnas que regresa el resultado
-				print "<table class='responsive' >\n";
-				echo "<tr>\n <th>ID</th>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Especialidad</th>\n <th>Duracion de Cita</th>\n <th></th>\n</tr>\n";
-
-				while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
-				    print "<tr>\n";
-				    foreach ($row as $item) {
-				        print "    <td  style='text-align: center'>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;")."</td>\n";
+				if(($stmt->num_rows)>0){
+					print "<table class='responsive' >\n";
+					echo "<tr>\n <th>ID</th>\n <th>Nombre(s)</th>\n <th>Apellido(s)</th>\n <th>Especialidad</th>\n <th>Duracion de Cita</th>\n <th></th>\n</tr>\n";
+	
+					while ($row = $stmt->fetch_assoc()) {
+					    print "<tr>\n";
+					    foreach ($row as $item) {
+					        print "    <td  style='text-align: center'>" . ($item !== null ? htmlentities($item, ENT_QUOTES) : "&nbsp;")."</td>\n";
+						}
+						print "	   <td><form action='medico.php' method='post'>
+						<input type='hidden' name='drid' value='".$row['drid']."'/>
+						<input type='hidden' name='fname' value='".$row['dfname']."'/>
+						<input type='hidden' name='lname' value='".$row['dlname']."'/>
+						<input type='hidden' name='spec' value='".$row['specialty']."'/>
+						<input type='hidden' name='lenght' value='".$row['lenght']."'/>
+						<input type='hidden' name='mod' value=true/>
+						<input type='submit' value='Modificar' class='button' style='height:2.3rem;font-size: 1.2rem; padding:0.2rem 0.1rem 0.1rem 0.2rem;' >
+						</form></td>\n";
+					    print "</tr>\n";
 					}
-					print "	   <td><form action='medico.php' method='post'>
-					<input type='hidden' name='drid' value='".$row['DRID']."'/>
-					<input type='hidden' name='fname' value='".$row['DFNAME']."'/>
-					<input type='hidden' name='lname' value='".$row['DLNAME']."'/>
-					<input type='hidden' name='spec' value='".$row['SPECIALTY']."'/>
-					<input type='hidden' name='lenght' value='".$row['LENGHT']."'/>
-					<input type='hidden' name='mod' value=true/>
-					<input type='submit' value='Modificar' class='button' style='height:2.3rem;font-size: 1.2rem; padding:0.2rem 0.1rem 0.1rem 0.2rem;' >
-					</form></td>\n";
-				    print "</tr>\n";
+					print "</table>\n";
+				}else{
+					echo 
+				"	<div class='panel callout radius'>
+				  		<h5>¡No hay médicos registrados!</h5>
+				  		<p>Registre médicos para poder mostrarlos en esta vista. 
+				  		Una vez registrados usted podra modificar los datos del médico si asi lo desea.</p>
+					</div>";
 				}
-				print "</table>\n";
-
 				//cerrar conexion
-				oci_free_statement($stid);
-				oci_close($conn);
+				$stmt->close();
+				$mysqli->close();
 			?>
 		</div>
 		<div class="large-12 column" style="height:20%;" align="center">
@@ -121,17 +113,14 @@ if(login_check($mysqli)){
 			
 			</form>
 	    </div>
-		<?php if($_POST['mod']){ ?>
+		<?php if(isset($_POST['mod'])){ ?>
 		<div id="mod" class="reveal-modal open" data-reveal="" style="visibility: visible; display: block; opacity: 1 " align="left">
 	        <fieldset>
 	        <legend><h4>Modificar Médico</h4></legend>     	
 	     	<form action="queriesInsert.php" method="post">
 
 	     	<div class="row">
-	     	<div class="large-1 column">
-	        <label>ID</label>
-	        <input type="text" name="ID" value=<?php echo "'".$_POST['drid']."'" ?>> </input>
-	        </div>
+	        <input type="hidden" name="ID" value=<?php echo "'".$_POST['drid']."'" ?>> </input>
 	        <div class="large-5 column">
 	        <label>Nombre(s)</label>
 	        <input type="text" name="fname" value=<?php echo "'".$_POST['fname']."'" ?>> </input>

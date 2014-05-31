@@ -56,7 +56,7 @@ if(login_check($mysqli)){
 					echo 
 				"	<div class='panel callout radius'>
 				  		<h5>¡No hay pacientes registrados!</h5>
-				  		<p>Registre pacientes para poder mostrarlos en esta vida. 
+				  		<p>Registre pacientes para poder mostrarlos en esta vista. 
 				  		Una vez registrados usted podra modificar los datos del paciente si asi lo desea.</p>
 					</div>";
 				}

@@ -2,34 +2,38 @@
 	include "connect.php";
 
 	if(isset($_POST['agregarMedico'])){
+			$stmt= $mysqli->prepare("INSERT INTO doctor VALUES(?,?,?,?,time(?))");
 
-			$ID = addslashes($_POST['ID']);
-			$fname = addslashes($_POST['fname']);
-			$lname = addslashes($_POST['lname']);
-			$specialty = addslashes($_POST['specialty']);
-			$app_length = addslashes($_POST['app_length']);
-
-			$strSql= "INSERT INTO doctor VALUES('".$ID."','".$fname."','".$lname."','".$specialty."',to_date('".$app_length."','HH24:MI'))";
-
-			$objParse=oci_parse($conn, $strSql);
-			$objExecute= oci_execute($objParse,OCI_DEFAULT);
-
-			echo $strSql;
-
-			if($objExecute){
-				//oci_commit($conn);
-				echo "<meta charset='utf-8'/><script> alert('¡Médico Agregado!')</script>";				
-				//include "medico.php";
-			}
-			else{
-				$e = oci_error($objParse);  
+			if(!$stmt->bind_param('sssss', $_POST['ID'], $_POST['fname'], $_POST['lname'], $_POST['specialty'], $_POST['app_length'])){
+				$err=$stmt->error;
 			}
 
-			oci_free_statement($objParse);
-			oci_close($conn);
-
-			header('Location:medico.php?alert=true');  
+			if(!$stmt->execute()){
+				$err=$stmt->error;
+			}
+			
+			if(($stmt->affected_rows) > 0){
+				$stmt->close();
+				$mysqli->close();
+				echo "<script>
+					alert('¡Médico agregado!');
+					window.location = 'medico.php';
+					</script>
+					'";
+			}else{
+				$stmt->close();
+				$mysqli->close();
+				if(isset($err)){
+					echo $err;
+				}
+				echo "<script>
+					alert('Error al agregar. Por favor inténtelo de nuevo.');
+					window.location = 'medico.php';
+					</script>
+					'";
+			}
 	}
+
 	if(isset($_POST['agregarCita'])){
 			$dr = addslashes($_POST['dr']);
 			$fname = addslashes($_POST['fname']);
@@ -293,29 +297,37 @@ if(isset($_POST['scheduleInsert'])){
 		header('Location:crear-cita.php?alert=true');  
 
 		}
-		if(isset($_POST['modMedico'])){
-			$stid = oci_parse($conn, "UPDATE doctor SET dfname=:myfname, dlname=:mylname, specialty=:myspec, app_lenght=to_date(:mylenght,'HH24:MI') WHERE drid=:mydr");
-						oci_bind_by_name($stid, ":myfname", $_POST['fname']);
-						oci_bind_by_name($stid, ":mylname", $_POST['lname']);
-						oci_bind_by_name($stid, ":myspec", $_POST['specialty']);
-						oci_bind_by_name($stid, ":mylenght", $_POST['app_length']);
-						oci_bind_by_name($stid, ":mydr", $_POST['ID']);
-						if (!$stid) {
-							$e = oci_error($conn);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-						}
 
-						$r = oci_execute($stid);
-						if (!$r) {
-							$e = oci_error($stid);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-						}
-						oci_commit($conn);
-						oci_free_statement($stid);
-						oci_close($conn);
-						header('Location:medico.php');  
-							
+		if(isset($_POST['modMedico'])){
+			$stmt = $mysqli->prepare("UPDATE doctor SET dfname=?, dlname=?, specialty=?, app_lenght=time(?) WHERE drid=?");
+			
+			if(!$stmt->bind_param('sssss', $_POST['fname'], $_POST['lname'], $_POST['specialty'], $_POST['app_length'], $_POST['ID'])){
+				$err=$stmt->$error;
+			}
+
+			if(!$stmt->execute()){
+				$err=$stmt->$error;
+			}
+			if(($stmt->affected_rows) > 0){
+				$stmt->close();
+				$mysqli->close();	
+				echo "<script>
+				alert('¡Médico modificado!');
+				window.location= 'medico.php';
+				</script>";
+			}else{
+				$stmt->close();
+				$mysqli->close();	
+				if(isset($err)){
+					echo $err;
+				}
+				echo"<script>
+				alert('Error al modificar datos. Inténtelo de nuevo.');
+				window.location= 'medico.php';
+				</script>";
+			}					
 		}
+
 		if(isset($_POST['modPaciente'])){
 			$stmt = $mysqli->prepare("UPDATE patient SET pfname=?, plname=?, phone=?, email=? WHERE pid=?");
 			$stmt->bind_param('ssiss', $_POST['fname'], $_POST['lname'], $_POST['phone'], $_POST['mail'], $_POST['ID']);
@@ -336,6 +348,7 @@ if(isset($_POST['scheduleInsert'])){
 					</script>";
 			}							
 		}
+
 		if(isset($_POST['agregarPaciente'])){
 			$stmt = $mysqli->prepare("INSERT INTO patient VALUES(?,?,?,?,?)");
 			if(!$stmt->bind_param('sssis',$_POST['ID'], $_POST['fname'], $_POST['lname'], $_POST['phone'], $_POST['mail'])){
@@ -361,6 +374,7 @@ if(isset($_POST['scheduleInsert'])){
 					</script>";
 			}							
 		}
+
 		if(isset($_POST['aprobarCita'])){
 			$stmt= $mysqli->prepare("UPDATE appointment SET approved='A' WHERE pid=? AND drid=? AND app_datetime=? ");
 			$stmt->bind_param('sss', $_POST['pid'], $_POST['drid'], $_POST['app_date']);
