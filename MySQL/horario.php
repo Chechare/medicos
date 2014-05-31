@@ -1,6 +1,7 @@
 <?php
 include "connect.php";
 include "driver.php";
+include "functions.php";
 sec_session_start();
 
 if(login_check($mysqli)){
@@ -28,44 +29,7 @@ if(login_check($mysqli)){
 					<div class="large-8 column left">
 					<select name='dr' onchange='this.form.submit()'>
 					<?php
-						//iniciar la conexión
-						include "connect.php";
-
-						// Prepare the statement
-						//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-						$stid = oci_parse($conn, 'SELECT * FROM doctor_data ORDER BY drid');
-						if (!$stid) {
-							$e = oci_error($conn);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-						}
-
-						// Perform the logic of the query
-						// Ejecuta el querie
-						$r = oci_execute($stid);
-						if (!$r) {
-							$e = oci_error($stid);
-							trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-						}
-
-						// Fetch the results of the query
-						//Toma los datos, revisa y mientras alla una fila crea una opcion para el select
-						while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {
-							if(isset($_GET['dr'])){
-								if($_GET['dr']==$row['DRID']){
-									echo "<option value='".$row['DRID']."' selected>".$row['DRID'].'-'.$row['DFNAME'].' '.$row['DLNAME'].'-'.$row['SPECIALTY'].'</option> /n';
-								}
-								else{
-									echo "<option value='".$row['DRID']."'>".$row['DRID'].'-'.$row['DFNAME'].' '.$row['DLNAME'].'-'.$row['SPECIALTY'].'</option> /n';
-								}
-							}
-							else{
-								echo "<option value='".$row['DRID']."'>".$row['DRID'].'-'.$row['DFNAME'].' '.$row['DLNAME'].'-'.$row['SPECIALTY'].'</option> /n';
-							}
-						}
-						//cerrar conexion
-						oci_free_statement($stid);
-						oci_close($conn);
-
+						getMedicos();
 					?>
 					</select>
 					</div>
@@ -201,30 +165,11 @@ if(login_check($mysqli)){
 			<?php
 				include "connect.php";
 
-				// Prepare the statement
-				//El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-				$stid = oci_parse($conn, 'SELECT * FROM doctor_data ORDER BY drid');
-				if (!$stid) {
-				    $e = oci_error($conn);
-				    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+				if(!$stmt = $mysqli->query( 'SELECT * FROM doctor_data ORDER BY drid')){
+					echo $stmt->error;
 				}
-
-				// Perform the logic of the query
-				// Ejecuta el querie
-				$r = oci_execute($stid);
-				if (!$r) {
-				    $e = oci_error($stid);
-				    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-				}
-
-				// Fetch the results of the query
-				//Toma los datos, revisa y mientras alla una fila crea una para la tabla. 
-				//El foreach recorre las columnas que regresa el resultado
-			
-				//cerrar conexion
 				
-				oci_free_statement($stid);
-				oci_close($conn);
+				$mysqli->close();
 			?>
 		</div>
 

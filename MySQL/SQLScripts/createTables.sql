@@ -32,8 +32,8 @@ CONSTRAINT pk_usernameID PRIMARY KEY (username)
 CREATE TABLE schedule(
 day varchar(10),
 drID varchar(3),
-startHour datetime,
-endHour datetime,
+startHour time,
+endHour time,
 CONSTRAINT pk_scheduleID PRIMARY KEY (day,drId),
 CONSTRAINT fk_scheduleDr FOREIGN KEY (drId)
 REFERENCES Doctor(drId)

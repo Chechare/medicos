@@ -60,8 +60,8 @@
 			oci_close($conn);
 		
 	}
-if(isset($_POST['scheduleInsert'])){
-		oci_close($conn);
+
+	if(isset($_POST['scheduleInsert'])){
 		$startArray=array(1 => $_POST['1start'],
 						2 => $_POST['2start'],
 						3 =>$_POST['3start'],
@@ -87,49 +87,33 @@ if(isset($_POST['scheduleInsert'])){
 							6 =>'viernes',
 							7 =>'sabado'
 							);
-		for($i=1;$i<8;$i++){
-			include "connect.php";
-			$stid = oci_parse($conn, "INSERT INTO schedule VALUES(:myday,:mydr,to_date(:mystart,'HH24:MI'),to_date(:myend,'HH24:MI'))");
+			$i=1;
 			$myday=$days[$i];
-			oci_bind_by_name($stid, ":myday", $myday);
-			oci_bind_by_name($stid, ":mydr", $_POST['drid']);
-			oci_bind_by_name($stid, ":mystart", $startArray[$i]);
-			oci_bind_by_name($stid, ":myend", $endArray[$i]);
+			$start=$startArray[$i];
+			$end=$endArray[$i];
+			$insert = $mysqli->prepare("INSERT INTO schedule VALUES(?,?,time(?),time(?))");
+			$insert -> bind_param('ssss', $myday, $_POST['drid'], $startArray[$i], $endArray[$i]);
+			$update = $mysqli->prepare("UPDATE schedule SET starthour=time(?), endhour=time(?) WHERE day=? AND drid=? ");
+			$update -> bind_param('ssss',$start,$end, $myday, $_POST['drid']);
+
+		for($i;$i<8;$i++){
 					// Perform the logic of the query
-					// Ejecuta el querie
-					$r = oci_execute($stid);
-					if (!$r) {
-						//$e = oci_error($stid);
-						$stid = oci_parse($conn, "UPDATE schedule SET starthour=to_date(:mystart,'HH24:MI'), endhour=to_date(:myend,'HH24:MI') WHERE day=:myday AND drid=:mydr");
-						$myday=$days[$i];
-						oci_bind_by_name($stid, ":myday", $myday);
-						oci_bind_by_name($stid, ":mydr", $_POST['drid']);
-						oci_bind_by_name($stid, ":mystart", $startArray[$i]);
-						oci_bind_by_name($stid, ":myend", $endArray[$i]);
-						if (!$stid) {
-									$e = oci_error($conn);
-									trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-								}
+					// Ejecuta el querie				
+					$myday=$days[$i];
+					$start=$startArray[$i];
+					$end=$endArray[$i];
 
-								// Perform the logic of the query
-								// Ejecuta el querie
-								$r = oci_execute($stid);
-								if (!$r) {
-									$e = oci_error($stid);
-									trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-								}
-					}
-
-			// Fetch the results of the query
-			//Toma los datos, revisa y mientras alla una fila crea una para la tabla. 
-			//El foreach recorre las columnas que regresa el resultado
-		
-			//cerrar conexion
-			oci_commit ($conn);
-			oci_free_statement($stid);
-			oci_close($conn);
-				
+					if (!$insert->execute()) {	
+						if(!$update->execute()){
+							echo $insert->error;
+							echo $update->error;
+						}	
+					}		
 		}
+			//cerrar conexion
+		$insert->close();
+		$update->close();
+		$mysqli->close();
 		header('Location:horario.php?dr='.$_POST['drid']);  
 	}	
 
