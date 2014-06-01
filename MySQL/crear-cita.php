@@ -1,28 +1,8 @@
 <?php
 include "driver.php";
 include "connect.php";
+include "functions.php";
 sec_session_start();
-
-$alert = isset($_GET["alert"]) ? $_GET["alert"] : 0;
-$alert2 = isset($_GET["alert2"]) ? $_GET["alert2"] : 0;
-$alert3 = isset($_GET["alert3"]) ? $_GET["alert3"] : 0;
-$alert4 = isset($_GET["alert4"]) ? $_GET["alert4"] : 0;
-
-if($alert){
-  echo "<script>alert('¡Paciente registrado!');</script>";
-}
-if($alert2){
-  echo "<script>alert('¡Error! El Paciente puede no estar registrado');</script>";
-}
-if($alert3){
-  echo "<script>alert('¡Error! Horario no disponible Cita no creada');</script>";
-	if(!$alert4){
-  echo "<script>alert('Usuario si fue agregado, primera visita: NO');</script>";
-}
- }
-if($alert4){
-  echo "<script>alert('¡Error! Usario no agregado');</script>";
-}
 
 if(login_check($mysqli)){
 
@@ -138,24 +118,22 @@ if(login_check($mysqli)){
               $drid="D01";                        
             }
 
-              $query=oci_parse($conn, "SELECT to_Char(app_lenght,'HH24') AS lenght FROM doctor WHERE drid='".$drid."'");
-              if (!$query) {
-                $e = oci_error($conn);
-                trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-              }
+            $stmt = $mysqli->prepare("SELECT time_format(time(app_lenght), '%H') AS lenght FROM doctor WHERE drid=?");
 
-              $r = oci_execute($query);
+            if(!$stmt->bind_param('s',$drid)){
+              echo $stmt->error;
+            }
 
-              if (!$r) {
-                  $e = oci_error($query);
-                  trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-              }
-              $row=oci_fetch_array($query,OCI_ASSOC+OCI_RETURN_NULLS);
-                
-              $lenght=$row['LENGHT'];
-
-              echo "return parseInt('".$lenght."');";            
-              oci_close($conn);
+            if(!$stmt->execute()){
+              echo $stmt->error;
+            }
+            
+            $resultado=$stmt->get_result();
+            $r=$resultado->fetch_assoc();
+            $lenght=$r['lenght']; 
+            echo "return parseInt('".$lenght."');";            
+            $stmt->close();
+            $mysqli->close();
           ?> 
        }
 
@@ -171,24 +149,22 @@ if(login_check($mysqli)){
               $drid="D01";                        
             }
 
-              $query=oci_parse($conn, "SELECT to_Char(app_lenght,'MI') AS lenght FROM doctor WHERE drid='".$drid."'");
-              if (!$query) {
-                $e = oci_error($conn);
-                trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-              }
+            $stmt = $mysqli->prepare("SELECT time_format(time(app_lenght), '%i') AS lenght FROM doctor WHERE drid=?");
 
-              $r = oci_execute($query);
+            if(!$stmt->bind_param('s',$drid)){
+              echo $stmt->error;
+            }
 
-              if (!$r) {
-                  $e = oci_error($query);
-                  trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-              }
-              $row=oci_fetch_array($query,OCI_ASSOC+OCI_RETURN_NULLS);
-                
-              $lenght=$row['LENGHT'];
-
-              echo "return parseInt('".$lenght."');";            
-              oci_close($conn);
+            if(!$stmt->execute()){
+              echo $stmt->error;
+            }
+            
+            $resultado=$stmt->get_result();
+            $r=$resultado->fetch_assoc();
+            $lenght=$r['lenght']; 
+            echo "return parseInt('".$lenght."');";            
+            $stmt->close();
+            $mysqli->close();
           ?> 
        }
 
@@ -209,49 +185,6 @@ if(login_check($mysqli)){
 
         }
 
-    
-
-       function getMedicos(){
-       <?php
-            //iniciar la conexión
-            include "connect.php";
-
-            // Prepare the statement
-            //El querie tal como lo usarias en el DBM, parse lo prepara, recive la coneccion y el string
-            $stid = oci_parse($conn, 'SELECT * FROM doctor_data ORDER BY drid');
-            if (!$stid) {
-              $e = oci_error($conn);
-              trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-            }
-
-            // Perform the logic of the query
-            // Ejecuta el querie
-            $r = oci_execute($stid);
-            if (!$r) {
-              $e = oci_error($stid);
-              trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-            }
-  
-            // Fetch the results of the query
-            //Toma los datos, revisa y mientras alla una fila crea una opcion para el select
-            while ($row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS)) {        
-              if(isset($_GET['dr'])) { 
-                if($_GET['dr']==$row['DRID']){
-                  echo "document.write(\"<option value='".$row['DRID']."' selected>".$row['DFNAME']." ".$row['DLNAME']." - ".$row['SPECIALTY']."  </option>\");";              
-                }else{
-                  echo "document.write(\"<option value='".$row['DRID']."'>".$row['DFNAME']." ".$row['DLNAME']." - ".$row['SPECIALTY']."  </option>\");";              
-                }
-              }else{
-                echo "document.write(\"<option value='".$row['DRID']."'>".$row['DFNAME']." ".$row['DLNAME']." - ".$row['SPECIALTY']."  </option>\");";                  
-              }
-            }
-              //cerrar conexion
-            oci_free_statement($stid);
-            oci_close($conn);
-
-          ?>
-       }
-
        function getMedico(){
           <?php
             include "connect.php";
@@ -263,25 +196,18 @@ if(login_check($mysqli)){
               $drID="D01";                        
             }
 
-           $stid = oci_parse($conn, "SELECT DFNAME||' '||DLNAME AS name FROM doctor_data WHERE drid='".$drID."'");
-		   if (!$stid) {
-              $e = oci_error($conn);
-              trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-            }
+           $stmt = $mysqli -> prepare("SELECT dfname, dlname FROM doctor_data WHERE drid=?");
+  	       if (!$stmt->bind_param('s',$drID)) {
+              echo $stmt->close;
+           }
 
-            // Perform the logic of the query
-            // Ejecuta el querie
-            $r = oci_execute($stid);
-            if (!$r) {
-              $e = oci_error($stid);
-              trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
-            }
+           if(!$stmt->execute()){
+              echo $stmt->close;
+           }
 
-            $row = oci_fetch_array($stid, OCI_ASSOC+OCI_RETURN_NULLS);
-
-            echo "document.write('".$row['NAME']."');";
-            oci_close($conn);
-
+           $resultado=$stmt->get_result();
+           $row=$resultado->fetch_assoc();
+           echo "document.write('".$row['dfname']." ".$row['dlname']."');";
           ?>
        }
 
@@ -295,7 +221,7 @@ if(login_check($mysqli)){
         <h3><div class="large-2 column left" style="padding:0.36rem 0.39rem 0.5rem 4.2rem">Médico:</div>
       <div class="large-8 column left">
           <select name='dr' onChange='this.form.submit()'>
-            <script>getMedicos()</script>
+            <?php getMedicos(); ?>
           </select>
       </div>
       <div class="large-1 column left" >
@@ -332,7 +258,7 @@ if(login_check($mysqli)){
                 <div class="large-4 column" >
                   <label><strong>Medico</strong> </label>
                   <text id="doctor" >
-                    <script>getMedico()</script>
+                    <script>getMedico();</script>
                   </text>
                 </div>
 
@@ -384,7 +310,7 @@ if(login_check($mysqli)){
                  <div class="large-4 column" >
                   <label><strong>Medico</strong> </label>
                   <text id="dr" name="dr">
-                     <script>getMedico()</script>
+                     <script>getMedico();</script>
                  </text>
                 </div>
 

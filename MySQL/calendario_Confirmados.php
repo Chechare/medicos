@@ -96,7 +96,16 @@ if(login_check($mysqli)){
 	<body>
 		<div class="row">
 
-					<h1>Citas Confirmadas<h2>
+					<h1>Citas Confirmadas<h1>
+			<?php 
+				if(noMedicos()){
+					echo "<div class='panel callout radius red'>
+					  		<h5>¡No hay médicos registrados!</h5>
+					  		<p>Registre médicos para poder utilizar ésta vista. 
+					  		Una vez registrados usted podrá crear citas y visualizarlas aquí.</p>
+						</div>";
+				}
+			?>
 			<form action="calendario_Confirmados.php" method="get">
 				<h3><div class="large-2 column left" style="padding:0.36rem 0.39rem 0.5rem 2.2rem">Médico:</div>
 					<div class="large-8 column left">
@@ -121,14 +130,13 @@ if(login_check($mysqli)){
 			<div  class="large-12 column " >
 				<div class="large-12 column vscrollbar" align="center" style="height:30%;" >
 					<?php
-						$mysqli = new mysqli(HOST, USER, PASSWORD, DB);
+						include 'connect.php';
 
 						if(isset($_GET['dr'])){
 							$drID=$_GET['dr'];
 						}else{
 							$drID='D01';
 						}
-
 						$row=$mysqli->prepare("SELECT pfname, plname, dfname, dlname, description, app_start, time_format(app_lenght,'%H:%i') 
 												FROM app_data WHERE status='A' AND app_start>NOW() AND drid='".$drID."' ORDER BY app_start");
 						
@@ -149,9 +157,8 @@ if(login_check($mysqli)){
 							echo "</table>\n";
 						}
 						else{
-							echo "<meta charset='utf-8' /> <script> alert('No hay citas próximas para éste médico') </script>";
+							echo "<meta charset='utf-8' /> <script> alert('No hay citas próximas para éste médico.') </script>";
 						}
-
 						$row->close();
 						$mysqli->close();
 					?>

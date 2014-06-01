@@ -14,7 +14,7 @@ CREATE TABLE Patient
 pId varchar(4),
 pfname varchar(50) NOT NULL,
 plname varchar(50) NOT NULL,
-phone int(10),
+phone varchar(15),
 email varchar(254),
 CONSTRAINT pk_pID PRIMARY KEY (pId),
 CONSTRAINT pk_pFormat CHECK(pID BETWEEN 'P000' AND 'P999'),

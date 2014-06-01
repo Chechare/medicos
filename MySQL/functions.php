@@ -6,24 +6,40 @@
 
 		$row->execute();
 
-		$row->bind_result($drID, $dFName, $dLName);
+		$row->store_result();
 
-		while($row->fetch()){
-			if(isset($_GET['dr'])){
-				if($_GET['dr']==$drID){
-					echo "<option value=".$drID." selected>".$dFName." ".$dLName."</option> \n";	
-				}else{
-					echo "<option value=".$drID.">".$dFName." ".$dLName."</option> \n";
+		$row->bind_result($drID, $dFName, $dLName);
+		if($row->num_rows > 0){
+			while($row->fetch()){
+				if(isset($_GET['dr'])){
+					if($_GET['dr']==$drID){
+						echo "<option value=".$drID." selected>".$dFName." ".$dLName."</option> \n";	
+					}else{
+						echo "<option value=".$drID.">".$dFName." ".$dLName."</option> \n";
+					}
+				}
+				else{
+					echo "<option value=".$drID.">".$dFName." ".$dLName."</option> \n";				
 				}
 			}
-			else{
-				echo "<option value=".$drID.">".$dFName." ".$dLName."</option> \n";				
-			}
+		}else{
+			echo "<option value='D00' selected>No hay medicos registrados</option> \n";	
 		}
-
 		$row->close();
 		$mysqli->close();
 	}
 
+	function noMedicos(){
+		include 'connect.php';
+		$resultado= $mysqli->query('SELECT COUNT(*) AS count FROM doctor');
+		$r= $resultado->fetch_assoc();	
+		$mysqli->close();
+		if($r['count'] == 0){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 
 ?>

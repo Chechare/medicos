@@ -20,10 +20,19 @@ if(login_check($mysqli)){
 	</head>
 
 	<body style="background-color:white">
-		<div class="large-12 column" style="height:20%;" align="center">
-			<h1 >Horarios de Atención</h1>
-		</div>
-	<div class="row">
+		
+	<div class="row" align='center'>
+					<h1 >Horarios de Atención</h1>
+
+	<?php 
+		if(noMedicos()){
+			echo "<div class='panel callout radius' align='center'>
+			  		<h5>¡No hay médicos registrados!</h5>
+			  		<p>Registre médicos para poder utilizar ésta vista. 
+			  		Una vez registrados usted podrá modificar los horarios de atención o crear nuevos.</p>
+				</div>";
+		}else{
+	?>
 			<form action="horario.php" method="get">
 				<h3><div class="large-2 column left" style="padding:0.36rem 0.39rem 0.5rem 4.2rem">Médico:</div>
 					<div class="large-8 column left">
@@ -40,7 +49,7 @@ if(login_check($mysqli)){
 				</form>
 		</div>
 
-		<div class="row">
+		<div class="row panel">
 			<form action="queriesInsert.php" method="post">
 			<input type="hidden" name='drid' value=<?php if(isset($_GET['dr'])){ echo "'".$_GET['dr']."'";} else{ echo "'D01'";} ?> />
 			<div class="row">
@@ -158,19 +167,8 @@ if(login_check($mysqli)){
 				</div>
 			</div>
 			</form>
-		</div>
-		
-		
-		<div class="large-12 column vscrollbar" align="center" style="height:60%;"  >
-			<?php
-				include "connect.php";
 
-				if(!$stmt = $mysqli->query( 'SELECT * FROM doctor_data ORDER BY drid')){
-					echo $stmt->error;
-				}
-				
-				$mysqli->close();
-			?>
+		<?php } ?>
 		</div>
 
 	</body>

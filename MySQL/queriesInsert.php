@@ -34,33 +34,6 @@
 			}
 	}
 
-	if(isset($_POST['agregarCita'])){
-			$dr = addslashes($_POST['dr']);
-			$fname = addslashes($_POST['fname']);
-			$lname = addslashes($_POST['lname']);
-			$app_length = addslashes($_POST['app_length']);
-
-			$strSql= "INSERT INTO doctor VALUES('".$ID."','".$fname."','".$lname."','".$specialty."',to_date('".$app_length."','HH24:MI'))";
-
-			$objParse=oci_parse($conn, $strSql);
-			$objExecute= oci_execute($objParse,OCI_DEFAULT);
-
-			echo $strSql;
-
-			if($objExecute){
-				//oci_commit($conn);
-				echo "<meta charset='utf-8'/><script> alert('¡Médico Agregado!')</script>";				
-				//include "medico.php";
-			}
-			else{
-				$e = oci_error($objParse);  
-			}
-
-			oci_free_statement($objParse);
-			oci_close($conn);
-		
-	}
-
 	if(isset($_POST['scheduleInsert'])){
 		$startArray=array(1 => $_POST['1start'],
 						2 => $_POST['2start'],
@@ -118,169 +91,135 @@
 	}	
 
 	if(isset($_POST['crearCitaRegistrado'])){
-			$phone=addslashes($_POST['phone']);
-			$email=addslashes($_POST['email']);
+			$phone=$_POST['phone'];
+			$email=$_POST['email'];
+			$drID=$_POST['drID'];
+			$app_date=$_POST['app_date'];
+			$description=$_POST['description'];
+			$approved=$_POST['approved'];
 
-			$drID=addslashes($_POST['drID']);
-			$app_date=addslashes($_POST['app_date']);
-			$description=addslashes($_POST['description']);
-			$approved=addslashes($_POST['approved']);
-
-			$query="SELECT PID FROM patient WHERE phone=".$phone." OR email='".$email."'";
-			
-			$objParse=oci_parse($conn, $query);
-
-			$objExecute= oci_execute($objParse,OCI_DEFAULT);
-
-				if($objExecute){
-					//oci_commit($conn);
-					echo "<meta charset='utf-8'/><script> alert('¡Paciente Registrado!');</script>";				
-					//include "medico.php";
-				}
-				else{
-					$e = oci_error($objParse);  
-				}
-
-			$row = oci_fetch_array($objParse, OCI_ASSOC+OCI_RETURN_NULLS);
-			
-			oci_free_statement($objParse);
-
-
-			if(!is_null($row['PID'])){
-				$PID=$row['PID'];
-
-				$query2="INSERT INTO appointment VALUES('".$PID."','".$drID."',to_date('".$app_date."','DD-MM-YYYY HH24:MI'),'".$description."','".$approved."')";
-
-				$objParse2=oci_parse($conn, $query2);
-
-				$objExecute= oci_execute($objParse2,OCI_DEFAULT);
-
-				if($objExecute){
-					//oci_commit($conn);
-					echo "<meta charset='utf-8'/><script> alert('¡Cita Registrada!');</script>";				
-					//include "medico.php";
-				}
-				else{
-					$e = oci_error($objParse2);  
-				}
-
-				oci_commit($conn);
-				oci_free_statement($objParse2); 
-				oci_close($conn);
-				header('Location:crear-cita.php?alert=true'); 
-				}
-			else{
-				oci_close($conn);
-				header('Location:crear-cita.php?alert2=true');  
+			if($approved=='A'){
+				$url='crear-cita.php';
+			}
+			if($approved=='P'){
+				$url='crea-cliente.php';
 			}
 
-		
+			if(!$stmt = $mysqli -> prepare("SELECT pid FROM patient WHERE phone=? OR email=?")){
+				echo $mysqli->error;
+			}
+			
+			if(!$stmt -> bind_param('ss', $phone, $email)){
+				echo $stmt->error;
+			}
+
+			if(!$stmt -> execute()){
+				echo $stmt->error;
+			}
+			echo $email;
+			$result=$stmt->get_result();
+			if(($result->num_rows) > 0){
+				$row=$result->fetch_assoc();
+				$pid=$row['pid']; 
+				echo $pid;
+				$stmt->close();
+				if(!$stmt = $mysqli -> prepare("INSERT INTO appointment VALUES(?,?,STR_TO_DATE(?, '%d-%m-%Y %H:%i'),?,?)")){
+					echo $mysqli->error;
+				}
+
+				if(!$stmt -> bind_param('sssss', $pid, $drID, $app_date, $description, $approved)){
+					echo $stmt->error;
+				}
+
+				if(!$stmt -> execute()){
+					echo $stmt->error;
+				}
+
+				if($stmt -> affected_rows > 0){
+					echo "<script>
+					alert('¡Cita registrada!');
+					window.location = '".$url."';
+					</script>";
+				}else{
+					echo "<script>
+					alert('No se pudo registrar la cita, por favor intente de nuevo.');
+					window.location = '".$url."';
+					</script>";
+				}
+				$stmt->close();
+
+			}else{
+				echo "<script>
+					alert('Paciente no registrado, por favor registre al nuevo paciente.');
+					window.location = '".$url."';
+					</script>";
+			}
+			$mysqli->close();		
 	}
+	
 	if(isset($_POST['agregarCitaRegistro'])){
 		
-		$pFName=addslashes($_POST['fname']);
-		$pLName=addslashes($_POST['lname']);
-		$phone=addslashes($_POST['phone']);
-		$email=addslashes($_POST['email']);
-
-		$drID=addslashes($_POST['drID']);
-		$app_date=addslashes($_POST['app_date']);
-		$description=addslashes($_POST['description']);
-		$approved=addslashes($_POST['approved']);
-		$prequery=oci_parse($conn, "Select to_char(patientID_seq.nextval,'009') AS next from dual");
-		$preobjExecute= oci_execute($prequery,OCI_DEFAULT);
-
-			if($preobjExecute){
-				oci_commit($conn);
-				$row = oci_fetch_array($prequery, OCI_ASSOC+OCI_RETURN_NULLS);
-				$nextpid=$row['NEXT'];
-				$p='P';
-				$PID=$p.$nextpid;
-				$PID=str_replace(' ', '', $PID);
-				$PID=addslashes($PID);
-			}
-			else{
-				$e = oci_error($prequery);  
-				header('Location:crear-cita.php?alert2=true');
-			}
-		$query="INSERT INTO patient VALUES('".$PID."','".$pFName."','".$pLName."',".$phone.",'".$email."')";
-		$query2="INSERT INTO appointment VALUES('".$PID."','".$drID."',to_date('".$app_date."','DD-MM-YYYY HH24:MI'),'".$description."','".$approved."')";
-
-		$objParse=oci_parse($conn, $query);
-
-		$objExecute= oci_execute($objParse,OCI_DEFAULT);
-
-			if($objExecute){
-				oci_commit($conn);
-			}
-			else{
-				$e = oci_error($objParse);  
-				header('Location:crear-cita.php?alert2=true');
-			}
-
-		oci_commit($conn);
-		oci_free_statement($objParse);
-
-
-		$objParse2=oci_parse($conn, $query2);
-
-		$objExecute= oci_execute($objParse2,OCI_DEFAULT);
-
-		if($objExecute){
-			}
-			else{
-				$e = oci_error($objParse2);  
-				header('Location:crear-cita.php?alert2=true');
-			}
-
-		oci_commit($conn);
-		oci_free_statement($objParse2);
-		
-		
-		$query="SELECT *  FROM patient WHERE='".$PID."')";
-		$query2="SELECT *  FROM appointment WHERE pid='".$PID."' AND drID='".$drID."' AND app_date=to_date('".$app_date."','DD-MM-YYYY HH24:MI')";
-
-		$objParse=oci_parse($conn, $query);
-
-		$objExecute= oci_execute($objParse,OCI_DEFAULT);
-
-			if($row = oci_fetch_array($prequery)){
-				$a4=false;
-				if (!isset($row[0])){
-					$a4=true;;
-				}
-			}
-			else{
-				$e = oci_error($objParse);  
-				$a4=true;
-			}
-
-		oci_commit($conn);
-		oci_free_statement($objParse);
-
-
-		$objParse2=oci_parse($conn, $query2);
-
-		$objExecute= oci_execute($objParse2,OCI_DEFAULT);
-
-		if($row = oci_fetch_array($prequery)){
-				if (!isset($row[0])){
-					header('Location:crear-cita.php?alert3=true alert4='.$a4);
-				}
-			}
-			else{
-				$e = oci_error($objParse2);  
-				header('Location:crear-cita.php?alert3=true alert4='.$a4);
-			}
-
-		oci_commit($conn);
-		oci_free_statement($objParse2);
-
-
-		oci_close($conn);
-		header('Location:crear-cita.php?alert=true');  
-
+		$pFName=$_POST['fname'];
+		$pLName=$_POST['lname'];
+		$phone=$_POST['phone'];
+		$drID=$_POST['drID'];
+		$app_date=$_POST['app_date'];
+		$description=$_POST['description'];
+		$approved=$_POST['approved'];
+		if($_POST['email'] == ''){
+			$email=null;
+		}else{
+			$email=$_POST['email'];
 		}
+		if($approved=='A'){
+			$url='crear-cita.php';
+		}
+		if($approved=='P'){
+			$url='crea-cliente.php';
+		}
+		$prequery=$mysqli->query("SELECT SUBSTR(MAX(pid) FROM 2)+1 AS pid FROM patient");
+		$result= $prequery->fetch_assoc();
+		$pid=$result['pid'];
+		$pid="P".str_pad($pid, 3, "0", STR_PAD_LEFT);
+		$prequery->close(); 
+
+		$queryP=$mysqli -> prepare("INSERT INTO patient VALUES(?,?,?,?,?)");
+		$queryA=$mysqli -> prepare("INSERT INTO appointment VALUES(?,?,STR_TO_DATE(?, '%d-%m-%Y %H:%i'),?,?)");
+
+		if(!$queryP->bind_param('sssss', $pid, $pFName, $pLName, $phone, $email)){
+			echo $queryP->error;
+		}
+		echo $app_date;
+		if(!$queryA->bind_param('sssss', $pid, $drID, $app_date, $description, $approved)){
+			echo $queryA->error;
+		}
+
+		if($queryP->execute()){
+			if($queryA->execute()){
+				echo "<script>
+				alert('¡Cita y paciente registrados!');
+				window.location= '".$url."';
+				</script>";
+			}else{
+				echo $queryA->error;
+				echo "<script>
+				alert('Error al registrar cita. Por favor revise los datos de la cita.');
+				window.location= '".$url."';
+				</script>";
+			}
+		}else{
+			echo $queryP->error;
+			echo "<script>
+				alert('Error al registrar Paciente. Por favor revise datos del Paciente.');
+				window.location= '".$url."';
+				</script>";
+		}
+
+		$queryP->close();
+		$queryA->close();
+		$mysqli->close();
+
+	}
 
 		if(isset($_POST['modMedico'])){
 			$stmt = $mysqli->prepare("UPDATE doctor SET dfname=?, dlname=?, specialty=?, app_lenght=time(?) WHERE drid=?");
@@ -314,28 +253,42 @@
 
 		if(isset($_POST['modPaciente'])){
 			$stmt = $mysqli->prepare("UPDATE patient SET pfname=?, plname=?, phone=?, email=? WHERE pid=?");
-			$stmt->bind_param('ssiss', $_POST['fname'], $_POST['lname'], $_POST['phone'], $_POST['mail'], $_POST['ID']);
-			$stmt->execute();
+			if(!$stmt->bind_param('sssss', $_POST['fname'], $_POST['lname'], $_POST['phone'], $_POST['mail'], $_POST['ID'])){
+				echo $stmt->error;
+			}
+			if(!$stmt->execute()){
+				echo $stmt->error;
+			}
 			if (($stmt->affected_rows) > 0){
-				$stmt->close();
-				$mysqli->close();
 				echo "<script> 
 					alert('¡Paciente modificado!');
 					window.location = 'paciente.php';
 					 </script>";	
 			}else{
-				$stmt->close();
-				$mysqli->close();					
 				echo "<script> 
 					alert('Error al modificar datos del paciente. Inténtelo de nuevo.');						
 					window.location = 'paciente.php';
 					</script>";
 			}							
+			$stmt->close();
+			$mysqli->close();	
 		}
 
 		if(isset($_POST['agregarPaciente'])){
+			$prequery=$mysqli->query("SELECT SUBSTR(MAX(pid) FROM 2)+1 AS pid FROM patient");
+			$result= $prequery->fetch_assoc();
+			$pid=$result['pid'];
+			$pid="P".str_pad($pid, 3, "0", STR_PAD_LEFT);
+			$prequery->close(); 
+
+			if($_POST['email'] == ''){
+				$email=null;
+			}else{
+				$email=$_POST['email'];
+			}
+
 			$stmt = $mysqli->prepare("INSERT INTO patient VALUES(?,?,?,?,?)");
-			if(!$stmt->bind_param('sssis',$_POST['ID'], $_POST['fname'], $_POST['lname'], $_POST['phone'], $_POST['mail'])){
+			if(!$stmt->bind_param('sssis',$pid, $_POST['fname'], $_POST['lname'], $_POST['phone'], $email)){
 				$err=$stmt->error;
 			}
 			if(!$stmt->execute()){
