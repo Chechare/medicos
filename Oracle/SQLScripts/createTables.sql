@@ -70,6 +70,7 @@ CREATE VIEW hour_data AS
 SELECT day,drid,to_char(starthour,'HH24:MI') AS starthour,to_char(endhour,'HH24:MI') AS endhour
 FROM schedule;
 
+
 CREATE OR REPLACE TRIGGER horario
 BEFORE INSERT ON appointment
 FOR EACH ROW

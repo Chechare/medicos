@@ -115,6 +115,23 @@ if(login_check($conn)){
                 allDayDefault: false,
                 editable:false
               }
+			  ,
+				// limites de horario
+				{
+					url: 'hourLimit.php', 
+					type: 'POST',
+					data: {
+						dr: <?php if(isset($_GET['dr'])){ echo "'".$_GET['dr']."'";} else echo "'D01'"; ?>,
+						
+					},
+					error: function() {
+						alert('error al cargar los horarios!');
+					},
+					color: 'red',    
+					textColor: 'white',  
+					allDayDefault: false,
+					editable:false
+				}
 
         ]
       });
